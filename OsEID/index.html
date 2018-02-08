@@ -769,7 +769,7 @@ asciidoc.install(2);
 <h1>OsEID smart card &amp; OsEID token</h1>
 <span id="author">Peter Popovec</span><br>
 <span id="email" class="monospaced">&lt;<a href="mailto:popovec.peter@gmail.com">popovec.peter@gmail.com</a>&gt;</span><br>
-<span id="revdate">Thu Feb  8 11:49:49 CET 2018</span>
+<span id="revdate">Thu Feb  8 13:40:29 CET 2018</span>
 <div id="toc">
   <div id="toctitle">Table of Contents</div>
   <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
@@ -1550,8 +1550,7 @@ update your registry file.  Please use OsEID.reg file from download section.</p>
 </div></div>
 <div class="paragraph"><p>After personalizing your card, you need to use <strong>certutil -scinfo</strong> command in
 windows command prompt to import certificates from card into windows
-certificate store. After successful import of certificates, you can browse
-personal certificates by <strong>certmgr</strong> command.</p></div>
+certificate store.</p></div>
 <div style="page-break-after:always"></div>
 </div>
 <div class="sect2">
@@ -5147,10 +5146,8 @@ of key.  In default firmware configuration, modular multiplicative inversion
 is calculated only in key upload operation, and therefore the security of
 this algorithm is for now irrelevant.</p></div>
 <div class="paragraph"><p>Of course, undetected errors in firmware can be used to get keys from card too!</p></div>
-<div class="paragraph"><p>Beware, there is an inherent danger in using the CRT.  Search internet for
-<strong>single error in CRT</strong> implementation.  Implementation is resistent to single
-error, result of exponentation is checked by public exponent (this extend
-time of calculation about 2% for 2048 bit RSA to 5% for 512 bit RSA)</p></div>
+<div class="paragraph"><p>Beware, there is an inherent danger in using the CRT. Search internet for
+single error in CRT implementation.</p></div>
 <div class="paragraph"><p>OsEID version 20171231 introduces RSA key generation. This operation is
 really slow, but is not subject to <a href="#ROCA">[ROCA]</a>. There is really random prime
 selection algorithm used for RSA key generation.</p></div>
@@ -5859,7 +5856,7 @@ or decipher with 256 bit key.</p></div>
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2018-02-08 09:37:53 CET
+ 2018-02-08 13:39:39 CET
 </div>
 </div>
 </body>
