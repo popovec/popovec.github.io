@@ -769,7 +769,7 @@ asciidoc.install(2);
 <h1>OsEID smart card &amp; OsEID token</h1>
 <span id="author">Peter Popovec</span><br>
 <span id="email" class="monospaced">&lt;<a href="mailto:popovec.peter@gmail.com">popovec.peter@gmail.com</a>&gt;</span><br>
-<span id="revdate">Thu Feb  8 13:40:29 CET 2018</span>
+<span id="revdate">Wed Jan  2 10:08:18 CET 2019</span>
 <div id="toc">
   <div id="toctitle">Table of Contents</div>
   <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
@@ -778,7 +778,7 @@ asciidoc.install(2);
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="paragraph"><p>Copyright &#169; 2015-2017 Peter Popovec &lt;<a href="mailto:popovec.peter@gmail.com">popovec.peter@gmail.com</a>&gt;</p></div>
+<div class="paragraph"><p>Copyright &#169; 2015-2018 Peter Popovec &lt;<a href="mailto:popovec.peter@gmail.com">popovec.peter@gmail.com</a>&gt;</p></div>
 </div>
 </div>
 <div class="sect1">
@@ -786,7 +786,7 @@ asciidoc.install(2);
 <div class="sectionbody">
 <div class="paragraph"><p>OsEID is amateur/hobby smart card with RSA and EC cryptography support. It
 is designed on low cost and easily accessible microcontroller Atmel ATmega
-128 or ATmega 128A.</p></div>
+128 or ATmega 128A. Alternative hardware uses atmega 1284 microcontroller.</p></div>
 <div class="paragraph"><p><span class="image">
 <img src="images/card_3x.png" alt="OsEID">
 </span></p></div>
@@ -798,6 +798,12 @@ built in OsEID card.</p></div>
 <img src="images/token2.png" alt="OeEID-token">
 </div>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_project_website">Project website</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>OsEID projects releases can be found at  at <a href="https://oseid.sourceforge.io">https://oseid.sourceforge.io</a> or <a href="https://sourceforge.net/projects/oseid/">https://sourceforge.net/projects/oseid/</a></p></div>
 <div class="sect2">
 <h3 id="_features">Features</h3>
 <div class="ulist"><ul>
@@ -834,7 +840,7 @@ Support for pkcs#15 structure
 </li>
 <li>
 <p>
-RSA cryptography (key size 512 up to 2048 bits)
+RSA cryptography with side channel attack protection (key size 512 up to 2048 bits)
 </p>
 <div class="ulist"><ul>
 <li>
@@ -846,7 +852,7 @@ onboard key generation
 </li>
 <li>
 <p>
-Elliptic cryptography
+Elliptic cryptography with side channel attack protection
 </p>
 <div class="ulist"><ul>
 <li>
@@ -877,6 +883,11 @@ nistp256/prime256v1/secp256r1 OID 1.2.840.10045.3.1.7
 <li>
 <p>
 secp384r1 OID 1.3.132.0.34
+</p>
+</li>
+<li>
+<p>
+secp521r1 OID 1.3.132.0.35
 </p>
 </li>
 <li>
@@ -938,7 +949,7 @@ No Warranty, use at your own risk.
 </li>
 <li>
 <p>
-Insufficient doc (only this pdf file and comments in sources)
+Insufficient doc (only this html/pdf file and comments in sources)
 </p>
 </li>
 <li>
@@ -958,49 +969,54 @@ RSA operations slow (depends on ATmega RC oscillator, usually max about 13.5MHz)
 <div class="ulist"><ul>
 <li>
 <p>
-about 26.4 seconds for 2048 bit key,
+about 26.4 seconds for 2048 bit key / token about 12 seconds,
 </p>
 </li>
 <li>
 <p>
-about 12.7 seconds for 1536 bit key,
+about 12.7 seconds for 1536 bit key / token about 6 seconds,
 </p>
 </li>
 <li>
 <p>
-about 4.2  seconds for key below 1024 bits
+about 4.2  seconds for 1024 bit key / token about 2 seconds,
 </p>
 </li>
 <li>
 <p>
-OsEID-token is about 2x faster
+about 2.5  seconds for 768 and 512 bit keys / token about 1 second
 </p>
 </li>
 </ul></div>
 </li>
 <li>
 <p>
-EC sign/key generation slow
+EC operations slow ECDSA operation timing:
 </p>
 <div class="ulist"><ul>
 <li>
 <p>
-secp384r1  5.9 seconds
+secp521r1  11 seconds  / token about 5 seconds
 </p>
 </li>
 <li>
 <p>
-prime256v1 2.7 seconds
+secp384r1  5.9 seconds / token about 2.5 seconds
 </p>
 </li>
 <li>
 <p>
-prime192v1 1.1 second
+prime256v1 2.7 seconds / token about 1.5 seconds
 </p>
 </li>
 <li>
 <p>
-secp256k1  3.6 seconds
+prime192v1 1.1 second / token about 0.5 seconds
+</p>
+</li>
+<li>
+<p>
+secp256k1  3.6 seconds / token about 2 seconds
 </p>
 </li>
 </ul></div>
@@ -1012,12 +1028,7 @@ not perfect constant time EC operations
 </li>
 <li>
 <p>
-OsEID  card - ESD (electrostatic discharge) protection not implemented
-</p>
-</li>
-<li>
-<p>
-Limited support for file delete operation.
+OsEID card - ESD (electrostatic discharge) protection implemented only on token
 </p>
 </li>
 </ul></div>
@@ -1043,8 +1054,13 @@ mechanical construction - big, not compact as one plastic card
 </ul></div>
 <div class="paragraph"><p>OsEID disadvantages to MyEID card applet version 4.X:</p></div>
 <div class="paragraph"><p>(These functionalities are not supported by MyEID driver in opensc up to
-0.17, perhaps OsEID will support these functions in future)</p></div>
+0.18, perhaps OsEID will support these functions in future)</p></div>
 <div class="ulist"><ul>
+<li>
+<p>
+RSA - only value 65537 is allowed as public exponent
+</p>
+</li>
 <li>
 <p>
 experimental support for symmetric encrypt/decrypt - DES and AES
@@ -1077,11 +1093,6 @@ no 224 bit NIST curve
 </li>
 <li>
 <p>
-no 521 bit NIST curve
-</p>
-</li>
-<li>
-<p>
 slow RSA
 </p>
 </li>
@@ -1096,8 +1107,14 @@ card function can work differently. There is no enough information in
 MyEID applet reference manual 2.1.4 and no opensc implementation to test
 all functions.</p></div>
 <div class="paragraph"><p>OsEID disadvantages to MyEID card, applet version below 3.5:</p></div>
-<div class="paragraph"><p>(MyEID in version below 3.5 does not support EC cryptography)
-- slow RSA</p></div>
+<div class="paragraph"><p>(MyEID in version below 3.5 does not support EC cryptography)</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+slow RSA
+</p>
+</li>
+</ul></div>
 <div class="paragraph"><p>For a comparison, here is table showing the execution time of RSA decrypt
 operation (time in seconds) for MyEID (3.3.3), OsEID and OsEID with exponent
 blinding turned on:</p></div>
@@ -1433,10 +1450,11 @@ make -f Makefile.atmega128 lock</pre>
 </div>
 <div class="sect2">
 <h3 id="_vpp_pad">Vpp pad</h3>
-<div class="paragraph"><p>In year 2006, the standard ISO 7816 changed the definition of <strong>Vpp</strong> pad.  This
-pad is no longer used for programming voltage.  If you use newer reader
-(produced after 2006), Vpp pad of card pad must be isolated from reader.
-This can be done by stick self-adhesive tape on Vpp pad.</p></div>
+<div class="paragraph"><p>In year 2006, the standard ISO 7816 changed the definition of <strong>Vpp</strong> pad.
+This pad is no longer used for programming voltage.  If you use newer reader
+(produced after 2006), card may work, or fail in this reader.  If your OsEID
+card does not working in your card reader, Vpp pad of card pad must be isolated
+from reader.  This can be done by stick self-adhesive tape on Vpp pad.</p></div>
 </div>
 <div class="sect2">
 <h3 id="_building_oseid_token">Building OsEID-token</h3>
@@ -1451,18 +1469,19 @@ build this device.</p></div>
 <h2 id="_using_oseid_card">Using OsEID card</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>For linux users: download and install <strong>opensc</strong> package.  Please use opensc
-version 0.16 or 0.17.  Debian (stretch) already contains the <strong>opensc</strong>
-version 0.16.  If you need ECC, please use version 0.17 from Debian Buster,
-or compile version 0.17 from sources.  For other distros, please follow
-distro specific installation of opensc package.  Download and install
+version 0.16, 0.17, 0.18 or 0.19.  Debian (stretch) already contains the
+<strong>opensc</strong> version 0.16.  If you need ECC, please use version 0.19 from Debian
+Buster, or compile version 0.19 from sources.  For other distros, please
+follow distro specific installation of opensc package.  Download and install
 <strong>pcscd</strong> package.  According to your card reader, you will need to install
 specific driver for your reader (for example <strong>libccid</strong> or <strong>libacr38u</strong>
 package, ..  )</p></div>
-<div class="paragraph"><p>Windows users: download and install opensc 0.17.</p></div>
+<div class="paragraph"><p>Windows users: download and install opensc 0.17.  (version 0.18,0.19 is only
+partially tested, please read comments about minidriver configuration below)</p></div>
 <div class="sect2">
 <h3 id="_base_functionality">Base functionality</h3>
 <div class="paragraph"><p>The fastest way to test the functionality of the card is by launching program
-<strong>pscc_scan</strong> :</p></div>
+<strong>pcsc_scan</strong> :</p></div>
 <div class="literalblock">
 <div class="content monospaced">
 <pre>$ pcsc_scan
@@ -1530,8 +1549,14 @@ of opensc can be found in download directory.</p></div>
 <div class="sect2">
 <h3 id="_windows_minidriver_configuration">Windows minidriver configuration</h3>
 <div class="paragraph"><p>If you plan to use OsEID card in Win 10 (for example in EDGE browser etc.) you
-need install <strong>opensc</strong> package (0.17), configure opensc package and you need
-update your registry file.  Please use OsEID.reg file from download section.</p></div>
+need install <strong>opensc</strong> package (0.17).</p></div>
+<div class="paragraph"><p>Opensc version 0.17.0 functionality with OsEID card has been tested in WIN
+10 (both 64 and 32 bit versions).  <strong>certutil</strong> command is fully functional
+and TLS client auth in <strong>EDGE</strong> browser is working.  Opensc 0.18.0 and 0.19 fails
+in EDGE, there is missing PIN dialog.</p></div>
+<div class="paragraph"><p>To use OsEID card, You need configure opensc package (add OsEID ATR to
+opensc.conf file) and you need update your registry file.  Please use
+OsEID.reg file from download section.</p></div>
 <div class="listingblock">
 <div class="content monospaced">
 <pre>[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography\Calais\SmartCards\OsEID]
@@ -1548,9 +1573,21 @@ update your registry file.  Please use OsEID.reg file from download section.</p>
 "Smart Card Key Storage Provider"="Microsoft Smart Card Key Storage Provider"
 "Crypto Provider"="OpenSC CSP"</pre>
 </div></div>
+<div class="paragraph"><p>Opensc from version 0.18.0 uses different location of file
+opensc-minidriver.dll.  Please correct this in your register file:</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>"80000001"="C:\Program Files\OpenSC Project\OpenSC\minidriver\opensc-minidriver.dll"</pre>
+</div></div>
+<div class="paragraph"><p>For 32 bit opensc version on 64 bit system:</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>"80000001"="C:\Program Files (x86)\OpenSC Project\OpenSC\minidriver\opensc-minidriver.dll"</pre>
+</div></div>
 <div class="paragraph"><p>After personalizing your card, you need to use <strong>certutil -scinfo</strong> command in
 windows command prompt to import certificates from card into windows
-certificate store.</p></div>
+certificate store. After successful import of certificates, you can browse
+personal certificates by <strong>certmgr</strong> and/or <strong>certlm</strong> command.</p></div>
 <div style="page-break-after:always"></div>
 </div>
 <div class="sect2">
@@ -1616,8 +1653,9 @@ Security attributes:     33 3F FF</pre>
 </div>
 <div class="sect2">
 <h3 id="_generate_rsa_key">Generate RSA key</h3>
-<div class="paragraph"><p>(Warning, this operation is really slow, can run about 6 minutes but
-in some cases over 30 minutes for 1024 bit key)</p></div>
+<div class="paragraph"><p>(Warning, this operation is really slow, may run about 4 minutes but in some
+cases over 30 minutes for 1024 bit key, generating 2048 bit key take about
+45 minutes but in some cases several hours.)</p></div>
 <div class="literalblock">
 <div class="content monospaced">
 <pre>pkcs15-init --generate-key rsa/1024 --auth-id 1 --pin 11111111 \
@@ -1648,8 +1686,8 @@ pkcs15-init  --store-private-key 1024-key.pem --auth-id=1 --pin 11111111 \
 <td class="icon">
 <img src="./images/icons/note.png" alt="Note">
 </td>
-<td class="content">For EC operations you need an opensc version 0.17, or check
-appendixes for opensc0.16 patch.</td>
+<td class="content">For EC operations you need an opensc version 0.17 or newer version, or
+check appendixes for opensc0.16 patch.</td>
 </tr></table>
 </div>
 <div class="literalblock">
@@ -1704,7 +1742,8 @@ RSA-GENERATE-KEYS - generate RSA key on card
 RSA-SIGN-TEST - sign sample text with token RSA operation and test this signature
 RSA-DECRYPT-TEST - decrypt test data
 PKCS11-RSA-TEST - pkcs11-tool full test on RSA keys
-RSA-CSR [key] [subject] - generate certificate signing request from key
+CSR [key] [subject] - generate certificate signing request
+CRT [key] [subject] - generate self signed certificate
 RND-TEST - test random generator entropy</pre>
 </div></div>
 <div style="page-break-after:always"></div>
@@ -1723,9 +1762,9 @@ ATmega 128) and PCB (printed circuit board).  No more components are needed.</p>
 <div class="sect2">
 <h3 id="_what_can_oseid_handle">What can OsEID handle ?</h3>
 <div class="paragraph"><p>OsEID smart card supports both RSA cryptography and Elliptic curve
-cryptography.  It is (partially *) compatible with ISO 7816 specifications.
-Card support PKCS15 structure, RSA up to 2048 bits and NIST elliptic curves
-(192,256 and 384 bits).</p></div>
+cryptography.  DES and AES ciphers are supported too.  It is (partially *)
+compatible with ISO 7816 specifications.  Card support PKCS15 structure, RSA
+up to 2048 bits and NIST elliptic curves (192,256 and 384 bits).</p></div>
 <div class="paragraph"><p>It is designed to emulate Aventra MyEID card in universal microcontroller.
 No special driver is needed for use in Linux/Windows.</p></div>
 </div>
@@ -1739,6 +1778,15 @@ microcontroller.</p></div>
 <h3 id="_where_do_i_buy_a_card">Where do I buy a card ?</h3>
 <div class="paragraph"><p>The card can not be bought, You have to make it. (Read documentation chapter
 Making OsEID card)</p></div>
+</div>
+<div class="sect2">
+<h3 id="_where_can_i_find_the_latest_firmware_version">Where can I find the latest firmware version ?</h3>
+<div class="paragraph"><p>New versions are published on  <a href="https://sourceforge.net/projects/oseid">https://sourceforge.net/projects/oseid</a>
+This is a primary site, code is available in tarball (all sources, firmware
+files compiled from sources in HEX format, and PDF version of doc). Same
+site can be reached at <a href="https://oseid.sourceforge.io">https://oseid.sourceforge.io</a></p></div>
+<div class="paragraph"><p>Some time later, code is available on github <a href="https://github.com/popovec/oseid">https://github.com/popovec/oseid</a>
+HTTP online doc is available on <a href="https://popovec.github.io/OsEID">https://popovec.github.io/OsEID</a></p></div>
 </div>
 <div class="sect2">
 <h3 id="_in_what_application_i_can_use_this_smart_card">In what application I can use this smart card ?</h3>
@@ -1755,7 +1803,7 @@ Firefox - secure login into web pages
 </li>
 <li>
 <p>
-windows Edge - secure login into web pages
+windows Edge - secure login into web pages (tested with opensc 0.17)
 </p>
 </li>
 <li>
@@ -1785,8 +1833,8 @@ RSA and ECC, as it is in the world of commercial cards.</p></div>
 <h3 id="_is_there_a_faster_alternative_to_oseid_card">Is there a faster alternative to OsEID card?</h3>
 <div class="paragraph"><p>Yes, you can make OsEID token, but it is more complicated to make it.
 A lot of skill with soldering of SMD components is needed. The token is about two
-times faster than OsEID card.  Token can run 2048 RSA operation below 12
-seconds.  Overclocked version can run 2048 bit RSA operation below 8 sec.</p></div>
+times faster than OsEID card.  Token can run 2048 RSA operation in about 12
+seconds.  Overclocked version can run 2048 bit RSA operation in about 8 sec.</p></div>
 </div>
 <div class="sect2">
 <h3 id="_why_oseid_is_denoted_as_beta_software">Why OsEID is denoted as BETA software?</h3>
@@ -1796,6 +1844,10 @@ from version to version.  Finally, card behavior is tested using (partial)
 regression tests.  Through this, nobody can guarantee the flawless function
 of such a large system.  It is advisable to leave the BETA tag (for now) on
 this project.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_i_found_a_bug_in_oseid_card_where_can_i_report_it">I found a bug in OsEID card, where can I report it ?</h3>
+<div class="paragraph"><p>You can contact me (author) by email &lt;<a href="mailto:popovec.peter@gmail.com">popovec.peter@gmail.com</a>&gt;</p></div>
 <div style="page-break-after:always"></div>
 </div>
 </div>
@@ -1803,17 +1855,19 @@ this project.</p></div>
 <div class="sect1">
 <h2 id="_filesystem">Filesystem</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Card uses a simple filesystem compatible with ISO7816.  Filesystem is in
-ATMEGA FLASH.  Security data (PINs, PUKs) are stored in ATMEGA EEPROM.
-Filesystem is organized as simple linear structure, header, file, header,
-file&#8230;.  header, file.  Simplicity of filesystem limits file delete
-operation.  Delete operation only marks file as deleted.  Deallocation of
-file space is available only for files at end of filesystem.  There is no
-delete operation for subtree.  There does not exist any CRC data checks or
-other consistency check in filesystem.  (Already a BETA version of FLASH
-friendly COW filesystem exists, with CRC and other features, but not open
-source for now.  Because of the code size it may not be available at all.  The
-development is currently frozen.)</p></div>
+<div class="paragraph"><p>Card uses a simple filesystem compatible with ISO7816.  However, the
+functions of filesystem do not meet all the requirements defined in ISO7816.
+Please, follow the comments on these inconsistencies in the following text.</p></div>
+<div class="paragraph"><p>Filesystem is in ATMEGA FLASH.  Security data (PINs, PUKs) are stored in
+ATMEGA EEPROM.  Filesystem is organized as simple linear structure, header,
+file, header, file&#8230;.  header, file.  Simplicity of filesystem limits file
+delete operation.  Delete operation only marks file as deleted.
+Deallocation of file space is available only for files at end of filesystem.
+There does not exist any CRC data checks or other consistency check in
+filesystem.  (Already a BETA version of FLASH friendly COW filesystem
+exists, with CRC and other features, but not open source for now.  Because
+of the code size it may not be available at all.  The development is
+currently frozen.)</p></div>
 <div class="paragraph"><p>File size is limited to max 32767 bytes, DF files are always auto sized.  If
 DF file is created, only the space for file header is allocated in card.  DF
 file does not contain information about children, but children know what DF
@@ -1826,45 +1880,45 @@ with MF file 3F00 and with DF file 5015. DF 5015 in OsEID card is created
 by <strong>opensc</strong> package (pkcs15-init).</p></div>
 <div class="listingblock">
 <div class="content monospaced">
-<pre>MyEID (ver 3.3.3)                         OsEID:
+<pre>MyEID (ver 3.3.3)                       OsEID:
 
-OpenSC [3F00]&gt; info                       OpenSC [3F00]&gt; info
+OpenSC [3F00]&gt; info                     OpenSC [3F00]&gt; info
 
-Dedicated File  ID 3F00                   Dedicated File  ID 3F00
+Dedicated File  ID 3F00                 Dedicated File  ID 3F00
 
-File path:     3F00                       File path:     3F00
-File size:     32767 bytes                File size:     32767 bytes
-ACL for SELECT:       N/A                 ACL for SELECT:       N/A
-ACL for LOCK:         N/A                 ACL for LOCK:         N/A
-ACL for DELETE:       CHV3                ACL for DELETE:       CHV3
-ACL for CREATE:       CHV3                ACL for CREATE:       CHV3
-ACL for REHABILITATE: N/A                 ACL for REHABILITATE: N/A
-ACL for INVALIDATE:   N/A                 ACL for INVALIDATE:   N/A
-ACL for LIST FILES:   N/A                 ACL for LIST FILES:   N/A
-ACL for CRYPTO:       N/A                 ACL for CRYPTO:       N/A
-ACL for DELETE SELF:  N/A                 ACL for DELETE SELF:  N/A
-Proprietary attributes:  00 02            Proprietary attributes:  00 02
-Security attributes:     33 3F FF         Security attributes:     33 3F FF
+File path:     3F00                     File path:     3F00
+File size:     32767 bytes              File size:     32767 bytes
+ACL for SELECT:       N/A               ACL for SELECT:       N/A
+ACL for LOCK:         N/A               ACL for LOCK:         N/A
+ACL for DELETE:       CHV3              ACL for DELETE:       CHV3
+ACL for CREATE:       CHV3              ACL for CREATE:       CHV3
+ACL for REHABILITATE: N/A               ACL for REHABILITATE: N/A
+ACL for INVALIDATE:   N/A               ACL for INVALIDATE:   N/A
+ACL for LIST FILES:   N/A               ACL for LIST FILES:   N/A
+ACL for CRYPTO:       N/A               ACL for CRYPTO:       N/A
+ACL for DELETE SELF:  N/A               ACL for DELETE SELF:  N/A
+Proprietary attributes:  00 02          Proprietary attributes:  00 02
+Security attributes:     33 3F FF       Security attributes:     33 3F FF
 
-OpenSC [3F00]&gt; cd 5015                    OpenSC [3F00]&gt; cd 5015
-OpenSC [3F00/5015]&gt; info                  OpenSC [3F00/5015]&gt; info
+OpenSC [3F00]&gt; cd 5015                  OpenSC [3F00]&gt; cd 5015
+OpenSC [3F00/5015]&gt; info                OpenSC [3F00/5015]&gt; info
 
-Dedicated File  ID 5015                   Dedicated File  ID 5015
+Dedicated File  ID 5015                 Dedicated File  ID 5015
 
-File path:     3F00/5015                  File path:     3F00/5015
-File size:     32767 bytes                File size:     5000 bytes
-DF name:       \xA0\x00\x00\x00cPKCS-15   DF name:       \xA0\x00\x00\x00cPKCS-15
-ACL for SELECT:       N/A                 ACL for SELECT:       N/A
-ACL for LOCK:         N/A                 ACL for LOCK:         N/A
-ACL for DELETE:       NEVR                ACL for DELETE:       CHV1
-ACL for CREATE:       CHV3                ACL for CREATE:       CHV1
-ACL for REHABILITATE: N/A                 ACL for REHABILITATE: N/A
-ACL for INVALIDATE:   N/A                 ACL for INVALIDATE:   N/A
-ACL for LIST FILES:   N/A                 ACL for LIST FILES:   N/A
-ACL for CRYPTO:       N/A                 ACL for CRYPTO:       N/A
-ACL for DELETE SELF:  N/A                 ACL for DELETE SELF:  N/A
-Proprietary attributes:  00 02            Proprietary attributes:  00 00
-Security attributes:     33 FF FF         Security attributes:     11 1F FF</pre>
+File path:     3F00/5015                File path:     3F00/5015
+File size:     32767 bytes              File size:     5000 bytes
+DF name:     \xA0\x00\x00\x00cPKCS-15   DF name:     \xA0\x00\x00\x00cPKCS-15
+ACL for SELECT:       N/A               ACL for SELECT:       N/A
+ACL for LOCK:         N/A               ACL for LOCK:         N/A
+ACL for DELETE:       NEVR              ACL for DELETE:       CHV1
+ACL for CREATE:       CHV3              ACL for CREATE:       CHV1
+ACL for REHABILITATE: N/A               ACL for REHABILITATE: N/A
+ACL for INVALIDATE:   N/A               ACL for INVALIDATE:   N/A
+ACL for LIST FILES:   N/A               ACL for LIST FILES:   N/A
+ACL for CRYPTO:       N/A               ACL for CRYPTO:       N/A
+ACL for DELETE SELF:  N/A               ACL for DELETE SELF:  N/A
+Proprietary attributes:  00 02          Proprietary attributes:  00 00
+Security attributes:     33 FF FF       Security attributes:     11 1F FF</pre>
 </div></div>
 <div class="paragraph"><p>If someone needs the exact same 5015 file as in MyEID card, workaround is
 available in <strong>OsEID-tool</strong>, you need only to uncomment APDU, that creates DF
@@ -1894,6 +1948,8 @@ card.</td>
 <div style="page-break-after:always"></div>
 <div class="sect2">
 <h3 id="_select_file">SELECT FILE</h3>
+<div class="paragraph"><p>Selection mechanism manages current DF and current EF. If EF is selected,
+parent DF is set as current DF.</p></div>
 <table class="tableblock frame-all grid-all"
 style="
 width:85%;
@@ -1968,7 +2024,7 @@ P1 = 0, P2 == 0, LC = 0:
 <li>
 <p>
 P1 = 3, LC = 0:
-  Select parent of already selected file.
+  Select parent DF of the current DF
 </p>
 </li>
 <li>
@@ -1985,7 +2041,7 @@ P1 = 9, LC &gt;=2, LC even, Data represents IDs of path to file:
 </li>
 <li>
 <p>
-P1 = 4, LC &gt;0, LC &#8656;16, Data represents filename:
+P1 = 4, LC &gt;0, LC &lt; 17, Data represents filename:
   Select DF by name
 </p>
 </li>
@@ -2022,6 +2078,7 @@ P2 = 0x0c - do not return FCI/FCP/FMD
 </p>
 </li>
 </ul></div>
+<div class="paragraph"><p>If select command failed, last correctly selected file remains selected.</p></div>
 <div class="paragraph"><p>MyEID difference: MyEID (according MyEID reference manual 2.1.4) does not
 support values 1,2,3 for P1.  MyEID does not support P2 = 0x0c.</p></div>
 <div style="page-break-after:always"></div>
@@ -2101,8 +2158,8 @@ value   1..2    size of file in bytes
 value   2       size of file in bytes
 
 0x82    1       File description tag
-1..4    1       length of value
-value   1..4    File description byte(s) check table below
+1..6    1       length of value
+value   1..6    File description byte(s) check table below
 
 0x83    1       file identifier
 2       1       length of value
@@ -2116,7 +2173,7 @@ value   1..16   Optional DF name
 2       1       length of value
 value   2       check table below
 
-0x86    1       Security Attributes
+0x86    1       Security Attributes (optional, default 0x000000)
 3..16   1       length of value
 value   3..16   only first 3 bytes are used, rest of bytes are ignored
 
@@ -2155,8 +2212,7 @@ is only symbolic, card allocates filesystem space for DF dynamically.</td>
 <td class="icon">
 <img src="./images/icons/note.png" alt="Note">
 </td>
-<td class="content">TAG 0x00 is handled as terminating tag, all tags after this tag are
-ignored.</td>
+<td class="content">Before, between or after BER-TLV data objects, 0x00 or 0xffs without any meaning may occur.</td>
 </tr></table>
 </div>
 <div class="paragraph"><div class="title">File description byte(s)</div><p>only the first byte is used, rest is ignored.</p></div>
@@ -2171,6 +2227,7 @@ ignored.</td>
 0x29    EF proprietary, for AES key
 0x38    DF</pre>
 </div></div>
+<div class="paragraph"><p>Any value can be orred with value 0x40, this mark file as shareable.</p></div>
 <div class="paragraph"><p>BEWARE! filetype 0x23 is not used by original MyEID card. In future, MyEID card may
 use the 0x23 filetype to different purposes. OsEID project will then change
 secp256k1 key marking to another filetype or move marking into Proprietary
@@ -2230,7 +2287,8 @@ error in RSA security operation.
 <td class="icon">
 <img src="./images/icons/note.png" alt="Note">
 </td>
-<td class="content">Lifecycle is managed internally, value in FCP is ignored</td>
+<td class="content">Lifecycle is managed internally (by PUT DATA/initialize applet and ACTIVATE APPLET
+commands), value in FCP is ignored</td>
 </tr></table>
 </div>
 <div class="paragraph"><p>You can found more information about key file in PUT DATA and GENERATE
@@ -2240,11 +2298,11 @@ PUBLIC KEY PAIR command.</p></div>
 <td class="icon">
 <img src="./images/icons/note.png" alt="Note">
 </td>
-<td class="content">opensc 0.15 (myeid driver) can handle only limited set of key sizes:
-512, 768, 1024, 1536, 2048</td>
+<td class="content">opensc versions 0.14 to 0.19 (myeid driver) can handle only limited set of key sizes:
+512, 768, 1024, 1536, 2048
+<strong>Example apdu</strong></td>
 </tr></table>
 </div>
-<div class="paragraph"><p><strong>Example apdu</strong></p></div>
 <div class="paragraph"><p>Create working EF with transparent structure, ID 2233, size 511, security
 attributes set to 01 1F FF:</p></div>
 <div class="exampleblock">
@@ -2463,10 +2521,9 @@ file is selected. (This may change in future!)</p></div>
 <td class="icon">
 <img src="./images/icons/note.png" alt="Note">
 </td>
-<td class="content">filesystem limitation does not allow deletion of arbitrary file, files
-are only marked as deleted, and only marked files at end of filesystem are
-really deallocated and space is returned to filesystem. Returned space is
-filled by value 0xff.  Recursive delete of DF is not supported.</td>
+<td class="content">files are only marked as deleted, and only marked files at end of
+filesystem are really deallocated and space is returned to filesystem.
+Returned space is filled by value 0xff.</td>
 </tr></table>
 </div>
 <div class="paragraph"><p><strong>Responses</strong></p></div>
@@ -2514,13 +2571,13 @@ filled by value 0xff.  Recursive delete of DF is not supported.</td>
 <div class="ulist"><ul>
 <li>
 <p>
-0x6986 command not allowed,(no current EF)
+0x6986 command not allowed, (no current EF)
 </p>
 </li>
 </ul></div>
 </dd>
 <dt class="hdlist1">
-<strong>file is marked by proprietary attribute as undeletable</strong> 
+<strong>DF/MF file is marked by proprietary attribute as undeletable</strong> 
 </dt>
 <dd>
 <div class="ulist"><ul>
@@ -2544,7 +2601,7 @@ filled by value 0xff.  Recursive delete of DF is not supported.</td>
 </ul></div>
 </dd>
 <dt class="hdlist1">
-<strong>file is not at filesystem end</strong> 
+<strong>DF is not empty</strong> 
 </dt>
 <dd>
 <div class="ulist"><ul>
@@ -3112,7 +3169,7 @@ width:85%;
 <tr>
 <th class="tableblock halign-left valign-top" >CLA  </th>
 <th class="tableblock halign-left valign-top" > INS  </th>
-<th class="tableblock halign-left valign-top" > P1 </th>
+<th class="tableblock halign-left valign-top" > P1   </th>
 <th class="tableblock halign-left valign-top" > P2  </th>
 <th class="tableblock halign-left valign-top" > LC  </th>
 <th class="tableblock halign-left valign-top" > Data </th>
@@ -3123,7 +3180,7 @@ width:85%;
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">0x00</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">0xCA</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">01</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">0x01</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">&#8230;</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">&#8230;</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">&#8230;</p></td>
@@ -3131,32 +3188,46 @@ width:85%;
 </tr>
 </tbody>
 </table>
+<div class="ulist"><ul>
+<li>
+<p>
+LC = 0
+</p>
+</li>
+<li>
+<p>
+P2 = data selector
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>P2 for global functions:</p></div>
 <div class="literalblock">
 <div class="content monospaced">
-<pre>Key file must be selected before GET DATA command:
-
-- 00 CA 01 00 00 Get algorithm identifier
-- 00 CA 01 01 00 Get modulus
-- 00 CA 01 02 00 Get public exponent
-- 00 CA 01 81 00 Get ECC curve parameter prime
-- 00 CA 01 82 00 Get ECC curve parameter A
-- 00 CA 01 83 00 Get ECC curve parameter B
-- 00 CA 01 84 00 Get ECC Generator point (X and Y)
-- 00 CA 01 85 00 Get ECC curve parameter Order
-- 00 CA 01 86 00 Get ECC public key (uncompressed)
-
-Global functions:
-
-- 00 CA 01 A0 00 Get applet information
-- 00 CA 01 A1 00 Get file list in current DF
-- 00 CA 01 A2 00 Get file list in current DF - list only transparent EF
-- 00 CA 01 A3 00 Get file list in current DF - list only DF
-- 00 CA 01 A4 00 Get file list in current DF - list only EF with RSA keys
-- 00 CA 01 A5 00 Get file list in current DF - list only EF with ECC keys
-- 00 CA 01 A6 00 Get file list in current DF - list only EF with DES/AES keys
-- 00 CA 01 AA 00 Get card capabilities
-- 00 CA 01 AC 00 Get access condition table</pre>
+<pre>0xA0  Get applet information
+0xA1  Get file list in current DF
+0xA2  Get file list in current DF - list only transparent EF
+0xA3  Get file list in current DF - list only DF
+0xA4  Get file list in current DF - list only EF with RSA keys
+0xA5  Get file list in current DF - list only EF with ECC keys
+0xA6  Get file list in current DF - list only EF with DES/AES keys
+0xAA  Get card capabilities
+0xAC  Get access condition table</pre>
 </div></div>
+<div class="paragraph"><p>P2 for key file GET DATA:
+(Key file must be selected before GET DATA command)</p></div>
+<div class="literalblock">
+<div class="content monospaced">
+<pre>0x00  Get algorithm identifier
+0x00  Get modulus
+0x02  Get public exponent
+0x81  Get ECC curve parameter prime
+0x82  Get ECC curve parameter A
+0x83  Get ECC curve parameter B
+0x84  Get ECC Generator point (X and Y)
+0x85  Get ECC curve parameter Order
+0x86  Get ECC public key (uncompressed)</pre>
+</div></div>
+<div class="paragraph"><p>GET DATA  PIN information:</p></div>
 <table class="tableblock frame-all grid-all"
 style="
 width:85%;
@@ -3172,7 +3243,7 @@ width:85%;
 <tr>
 <th class="tableblock halign-left valign-top" >CLA  </th>
 <th class="tableblock halign-left valign-top" > INS  </th>
-<th class="tableblock halign-left valign-top" > P1 </th>
+<th class="tableblock halign-left valign-top" > P1  </th>
 <th class="tableblock halign-left valign-top" > P2    </th>
 <th class="tableblock halign-left valign-top" > LC  </th>
 <th class="tableblock halign-left valign-top" > Data </th>
@@ -3183,7 +3254,7 @@ width:85%;
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">0x00</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">0xCA</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">01</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">0x01</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">0xBX</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">none</p></td>
@@ -3191,8 +3262,18 @@ width:85%;
 </tr>
 </tbody>
 </table>
-<div class="paragraph"><p>X in range 1..E
-LC,Data are ignored</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+X in range 1..E
+</p>
+</li>
+<li>
+<p>
+LC, Data are ignored
+</p>
+</li>
+</ul></div>
 <div class="paragraph"><p>This function returns PIN parameters as 9 bytes structure:</p></div>
 <div class="literalblock">
 <div class="content monospaced">
@@ -3244,49 +3325,195 @@ width:85%;
 </tr>
 </tbody>
 </table>
-<div class="paragraph"><p>Global operations:</p></div>
+<div class="sect3">
+<h4 id="_initialize_applet">INITIALIZE APPLET</h4>
+<table class="tableblock frame-all grid-all"
+style="
+width:85%;
+">
+<col style="width:7%;">
+<col style="width:7%;">
+<col style="width:7%;">
+<col style="width:7%;">
+<col style="width:7%;">
+<col style="width:57%;">
+<col style="width:7%;">
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">CLA</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">INS</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">P1</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">P2</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">LC</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">Data</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">LE</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">0x00</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">0xDA</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">01</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">E0</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">08</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">XX XX ACL0 ACL1 ACL2 XX XX XX</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">&#8230;</p></td>
+</tr>
+</tbody>
+</table>
+<div class="ulist"><ul>
+<li>
+<p>
+LE empty
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>This function can be used to erase card and return card into creation state
+(Lifecycle = 1). MF access conditions are set to values specified by
+ACL0, ACL1, ACL2.  If card is already in creation state, no access condition
+is checked, card is erased, only MF exists after calling this function.  If
+card is in activated state, access condition is checked first (MF
+recreation access condition).</p></div>
+</div>
+<div class="sect3">
+<h4 id="_initialize_pin">INITIALIZE PIN</h4>
+<table class="tableblock frame-all grid-all"
+style="
+width:85%;
+">
+<col style="width:7%;">
+<col style="width:7%;">
+<col style="width:7%;">
+<col style="width:7%;">
+<col style="width:7%;">
+<col style="width:57%;">
+<col style="width:7%;">
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">CLA</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">INS</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">P1</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">P2</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">LC</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">Data</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">LE</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">0x00</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">0xDA</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">01</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">ID</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">&#8230;</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">&#8230;</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">&#8230;</p></td>
+</tr>
+</tbody>
+</table>
+<div class="ulist"><ul>
+<li>
+<p>
+LE empty
+</p>
+</li>
+<li>
+<p>
+ID PIN ID 1 .. 14
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>This function is available only in card creation state (Lifecycle = 1). No
+access conditions are checked in this state, PIN 1 to 14 can be
+initialized. If PIn is already initialized, new initialization overwrites
+old PIN data.</p></div>
+<div class="paragraph"><p>If card is in activated state (Lifecycle = 7), this function returns SW1,2 = 0x6982
+(security status not satisfied).</p></div>
+</div>
+<div class="sect3">
+<h4 id="_key_load_operations">Key load operations</h4>
+<table class="tableblock frame-all grid-all"
+style="
+width:85%;
+">
+<col style="width:6%;">
+<col style="width:6%;">
+<col style="width:6%;">
+<col style="width:18%;">
+<col style="width:6%;">
+<col style="width:50%;">
+<col style="width:6%;">
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">CLA</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">INS</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">P1</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">P2</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">LC</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">Data</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">LE</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">0x00</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">0xDA</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">01</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">Key Part ID</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">&#8230;</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">&#8230;</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">&#8230;</p></td>
+</tr>
+</tbody>
+</table>
+<div class="ulist"><ul>
+<li>
+<p>
+LE empty
+</p>
+</li>
+<li>
+<p>
+Part = key part identification
+</p>
+</li>
+<li>
+<p>
+LC corresponding to data field length
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>Key part identification numbers:</p></div>
 <div class="literalblock">
 <div class="content monospaced">
-<pre>00 DA 01 E0 08  INITIALIZE APPLET
-
-00 DA 01 01..0E  INITIALIZE PIN</pre>
-</div></div>
-<div class="paragraph"><p>Key load operations:
-(Before Key load operation, key file must be selected)</p></div>
-<div class="literalblock">
-<div class="content monospaced">
-<pre>- 00 DA 01 80 LC [data] modulus P*Q - (for keys &lt; 2048)
-- 00 DA 01 81 LC [data] public exponent (65537 or 3)
-- 00 DA 01 82 LC [data] private exponent (not CRT, for keys &lt; 2048)
-- 00 DA 01 83 LC [data] prime P
-- 00 DA 01 84 LC [data] prime Q
-- 00 DA 01 85 LC [data] d mod (p-1)
-- 00 DA 01 86 LC [data] d mod (q-1)/EC publickey
-- 00 DA 01 87 LC [data] q-1 mod p/EC private key
-- 00 DA 01 88 LC [data] modulus (1st part for 2048 key)
-- 00 DA 01 89 LC [data] modulus (2nd part for 2048 key)
-- 00 DA 01 8A LC [data] private exponent (not CRT, 1st part for 2048 key)
-- 00 DA 01 8B LC [data] private exponent (not CRT, 2nd part for 2048 key)
-- 00 DA 01 A0 LC [data] symmetric key (DES/3DES/AES128/AES192/AES256)</pre>
+<pre> 80  modulus P*Q - (for keys &lt; 2048)
+ 81  public exponent (65537 or 3)
+ 82  private exponent (not CRT, for keys &lt; 2048)
+ 83  prime P
+ 84  prime Q
+ 85  d mod (p-1)
+ 86  d mod (q-1)/EC publickey
+ 87  q-1 mod p/EC private key
+ 88  modulus (1st part for 2048 key)
+ 89  modulus (2nd part for 2048 key)
+ 8A  private exponent (not CRT, 1st part for 2048 key)
+ 8B  private exponent (not CRT, 2nd part for 2048 key)
+ A0  symmetric key (DES/3DES/AES128/AES192/AES256)</pre>
 </div></div>
 <div class="paragraph"><p>Key file length in bytes must match key size in bits (for any type of keys,
 symmetric/ECC or RSA).</p></div>
+<div class="paragraph"><p>Before Key load operation, key file must be selected.</p></div>
 <div class="paragraph"><p>OsEID internally uses TLV to represent key parts, T is 8 bit value, L 8 bit
 value, length of V is specified by L (1..256 bytes).  One more byte is
 reserved (but for now not used) for key index in file.  There is one byte at
 end of last component (padding, 0xff).</p></div>
 <div class="paragraph"><p>OsEID allows to create key file of arbitrary size, but key upload fail if file
 size does not correspond to allowed key sizes for selected cipher.</p></div>
-<div class="paragraph"><p>For DES, file type must be set to 0x19  and allowed size are: 64 bytes =
-standard DES, 128 bytes 2DES (EDE mode), 256 bytes for 3DES (EDE mode).</p></div>
-<div class="paragraph"><p>For AES, file type must be set to 0x29 and  allowed sizes are: 128, 192, or
-256 bytes.</p></div>
+<div class="paragraph"><p>Any EF can be used to hold key data. However, it is advisable to use the values
+specified in description if the CREATE FILE operation.</p></div>
+<div class="paragraph"><p>For DES,  allowed size are: 64 bytes = standard DES, 128 bytes 2DES (EDE
+mode), 256 bytes for 3DES (EDE mode).</p></div>
+<div class="paragraph"><p>For AES,  allowed sizes are: 128, 192, or 256 bytes.</p></div>
 <div class="paragraph"><p>For ECC keys, only private key must be uploaded, public key is not needed.
 File type is 0x22.  Allowed key sizes: 192, 256 or 384 bits.  For secp256k1
 curve file type must be set to 0x23 and only 256 it key is allowed.</p></div>
-<div class="paragraph"><p>For RSA keys, file type must be set  to 0x11.  Card uses only CRT algo, if
-some of CRT component is not available, RSA operation fails.  You need to upload
-at least: <strong>prime P</strong>, <strong>prime Q</strong>, <strong>d mod (p-1)</strong>, <strong>d mod (q-1)</strong>, <strong>q<sup>-1</sup> mod P</strong></p></div>
+<div class="paragraph"><p>For RSA keys, card uses only CRT algo, if some of CRT component is not
+available, RSA operation fails.  You need to upload at least: <strong>prime P</strong>,
+<strong>prime Q</strong>, <strong>d mod (p-1)</strong>, <strong>d mod (q-1)</strong>, <strong>q<sup>-1</sup> mod P</strong></p></div>
 <div class="paragraph"><p>For now, public exponent is not needed by OsEID card, but future version of
 OsEID with RSA message blinding algo need this part of key too.  Therefore,
 it is recommended to upload <strong>public exponent</strong>.</p></div>
@@ -3300,7 +3527,6 @@ allowed to upload these components.  This functionality is optional, can be
 turned off at compilation time.  (R is based on P/Q length, if P length is
 512 bits, R is set to 2<sup>512</sup>, more information - search internet for
 Montgomery product calculation).</p></div>
-<div style="page-break-after:always"></div>
 <table class="tableblock frame-all grid-all"
 style="
 width:85%;
@@ -3315,7 +3541,7 @@ width:85%;
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top" >                </th>
-<th class="tableblock halign-left valign-top" >ID</th>
+<th class="tableblock halign-left valign-top" >Key part ID</th>
 <th class="tableblock halign-left valign-top" > 512  </th>
 <th class="tableblock halign-left valign-top" > 768  </th>
 <th class="tableblock halign-left valign-top" > 1024  </th>
@@ -3388,7 +3614,7 @@ width:85%;
 <td class="tableblock halign-left valign-top" ><p class="tableblock">2+128</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">d mod Q-1</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">d<sup>-1</sup> mod (Q-1)</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">85</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">2+32</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">2+48</p></td>
@@ -3397,7 +3623,7 @@ width:85%;
 <td class="tableblock halign-left valign-top" ><p class="tableblock">2+128</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">d mod P-1</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">d<sup>-1</sup> mod (P-1)</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">86</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">2+32</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">2+48</p></td>
@@ -3463,6 +3689,7 @@ width:85%;
 </table>
 <div class="paragraph"><p>MyEID allows to upload non CRT components, but these components may
 overwrite some of CRT components. Please consult MyEID reference manual.</p></div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_generate_public_key_pair">GENERATE PUBLIC KEY PAIR</h3>
@@ -3530,7 +3757,7 @@ field contain ASN1 formated data for public exponent. Only value 65537 is
 accepted.</p></div>
 <div class="paragraph"><p>Data field is ASN1 formated, 0x30 is SEQUENCE indicator, and value 0x02 or
 0x81 is used as "public exponent" tag.  (ASN.1 uses 0x02 as tag for INTEGER,
-MyEID 2.1.44 manual defines here tag 0x02 too. Opensc 0.17 send
+MyEID 2.1.4 manual defines here tag 0x02 too. Opensc 0.17 send
 0x81 here, OsEID for now allows both values).</p></div>
 <div class="paragraph"><p>If key is successfully generated, key file is filled with key data and card
 returns public modulus.</p></div>
@@ -3585,7 +3812,7 @@ detect number of key bits exists -  key file size. If you need to generate ECC
 key on card, key file size in bytes must match key length in bits.</p></div>
 <div class="paragraph"><p>APDU returns public key in format:
 0x86 - TAG
-0xXX - LEN
+0xXX - LEN (or 0x81, LEN for 521 bit key)
 0x04 - uncompressed indicator
 0xXX .. 0xXX - X coordinate of public key
 0xXX .. 0xXX - Y coordinate of public key</p></div>
@@ -3609,7 +3836,7 @@ The verification data is compared to reference data stored in card.
 The card security status is modified according to this comparison.</p></div>
 <div class="paragraph"><p>Card supports maximal 14 security access conditions.</p></div>
 <div class="paragraph"><p>A successful comparison enables use of card function controlled by security
-access condition, whitch number is in P2 parameter of APDU.  Counter
+access condition, which number is in P2 parameter of APDU.  Counter
 of unsuccessful verify attempts is then cleared.</p></div>
 <div class="paragraph"><p>For unsuccessful comparison, counter of unsuccessful verify attempts is
 incremented and if this counter is over predefined value, PIN
@@ -3815,7 +4042,13 @@ P1, P2, LC, Data, - arbitrary data are accepted
 <div class="paragraph"><p>This command activates card security mechanism of card, all access conditions
 become active.</p></div>
 <div class="paragraph"><p>Difference to MyEID: MyEID needs applet AID in Data field, P1 must be set to
-4 and P2 to 0. Applet AID must be set to  A000000063504B43532D3135.</p></div>
+4 and P2 to 0.  Applet AID must be set to A000000063504B43532D3135.  MyEID
+card allow activation only if PIN corresponding to MF recreation access
+condition is already initialized, otherwise card return SW1,2 = 0x6985
+(Conditions not satisfied).  OsEID always allow activation.  If PIN that
+allow recreation of MF is not initialized, there is no possibility to erase
+the activated card (only way for reuse activated card is reprogramming card
+CPU).</p></div>
 <div style="page-break-after:always"></div>
 </div>
 </div>
@@ -3963,7 +4196,12 @@ Value
 <div class="literalblock">
 <div class="content monospaced">
 <pre>TAG 81h, LEN 2
-XXXXh key file ID
+Value: XXXXh key file ID,
+
+Id is used to select the file which contains the key for the next security
+operation.  Select file this file is selected by same way as SELECT
+operation with P1 = 2 (DF can not be selected here).
+
 
 TAG 83h or 84h, LEN 1
 Tag 83h is for key file with symmetric key, 84h for file with asymmetric key.
@@ -4073,7 +4311,8 @@ bit keys.</p></div>
 sign operation, but this operation is identical to raw decipher operation.
 Please use <strong>opensc</strong> version from <strong>git</strong>, there is already fix that allows raw
 2048 bit signature.
-<a href="https://github.com/OpenSC/OpenSC/commit/deab9cce73377f973d2020ab5ab7adc302018bf6">https://github.com/OpenSC/OpenSC/commit/deab9cce73377f973d2020ab5ab7adc302018bf6</a></p></div>
+<a href="https://github.com/OpenSC/OpenSC/commit/deab9cce73377f973d2020ab5ab7adc302018bf6">https://github.com/OpenSC/OpenSC/commit/deab9cce73377f973d2020ab5ab7adc302018bf6</a>
+Opensc 0.18.0 already contain this patch.</p></div>
 <div class="paragraph"><p>WARNING!  OsEID support for DES and AES security operation is experimental.
 If selected key file contain AES/DES key, security operation is allowed only
 for CLA = 0x80.  Digital signature security operation is not supported if
@@ -4131,6 +4370,8 @@ Data - peer public key in format:  0x7c, LC-2 0x85 LC-4 0x04 point_data
 Here: 0x7c is Dynamic Authentication Template tag
       0x85 public key in data field
       0x04 uncompressed key indicator</p></div>
+<div class="paragraph"><p>In addition to tag 0x85 tag 0x80 (Witness tag) is allowed with an arbitrary
+length.  This tag is ignored for now.</p></div>
 <div class="paragraph"><p>Card returns shared secret derived from private key in selected file and
 public key provided in APDU. Technically, this operation does a point
 multiplication and X coordinate of calculated point is returned.</p></div>
@@ -4370,7 +4611,7 @@ returned.</p></div>
 </ul></div>
 </dd>
 <dt class="hdlist1">
-*GENERAL AUTHENTICATE * 
+<strong>GENERAL AUTHENTICATE</strong> 
 </dt>
 <dd>
 <div class="ulist"><ul>
@@ -4863,8 +5104,15 @@ manual.</p></div>
 <div class="sect2">
 <h3 id="_pcb">PCB</h3>
 <div class="paragraph"><p>There exists two version of PCB, one for classical photographic method and
-etching in ferric chloride and second version for CNC routing (.ngc file for
-linuxcnc available in download section).</p></div>
+etching in ferric chloride and second version for CNC routing.  You can
+found OsEID_token.ngc file in download section.  This file is designed for
+<strong>linuxcnc</strong> <a href="http://linuxcnc.org">http://linuxcnc.org</a>.  Please read this file, adjust feed rate,
+check safe Z position, tune spindle commands, tool number etc.  Dimensions
+in file are given in mm, make sure your machine uses metric, not imperial
+units.  Use 0.3 up to 0.5mm milling tool.  PCB is positioned at Z=-1, Z=1 is
+used for traverse.  Run your machine without tool first!</p></div>
+<div class="paragraph"><p>AUTHOR IS NOT RESPONSIBLE FOR ANY DAMAGE OF YOUR MACHINE, TOOL OR ANY ANOTER
+EQUIPMENTS. USE AT YOUR OWN RISK ONLY!</p></div>
 <div class="imageblock">
 <div class="content">
 <img src="images/OsEID_token-F.Cu.svg" alt="PCB0.1">
@@ -4889,27 +5137,156 @@ model is frozen for now.</p></div>
 <div class="sect1">
 <h2 id="appendixE">Appendix E: AVR arithmetics</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>AVR multiplication is based on karatsuba multiplication.  It uses open
-source (public domain) implementation from Michael Hutter and Peter Schwabe
-<a href="#AVR_KARATSUBA">[AVR_KARATSUBA]</a> but slightly modified.  Code is fully revised to enable
-run in interrupt safe way (stack pointer change is protected by CLI
+<div class="sect2">
+<h3 id="_addition_subtraction_and_rotate_shift_operations">Addition, subtraction and rotate/shift operations</h3>
+<div class="paragraph"><p>These operations are relatively simple, but to achieve desired speed,
+operations are partially unrolled.  In one unrolled step 32 or 64 bit of
+operands are processed.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_multiplication">Multiplication</h3>
+<div class="paragraph"><p>AVR multiplication is based on karatsuba multiplication.  It uses modified
+open source (public domain) implementation from Michael Hutter and Peter
+Schwabe <a href="#AVR_KARATSUBA">[AVR_KARATSUBA]</a>.  256 bit multiplication code is fully revised to
+enable run in interrupt safe way (stack pointer change is protected by CLI
 instruction.) Code is faster, original code took 4797 clock cycles (in
-branched version), now code runs in 4654 clock cycles.  Same revision was
-made on 192 bit multiplications, 2923 clock cycles was reduced to 2889 clock
-cycles.</p></div>
+branched version), new code is about 5% faster and about 6% smaller.  Now
+code need only 4552 clock cycles.  Same revision was made on 192 bit
+multiplication, 2923 clock cycles was reduced to 2860 clock cycles.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_squaring">Squaring</h3>
 <div class="paragraph"><p>192 and 256 bit squaring was written from scratch, it uses similar method as
 described in <a href="#AVR_SQUARING">[AVR_SQUARING]</a>.  Code is designed as non branched.  Optimized
-squaring allows us to run 1889 clock cycles for 192 bit squaring and 3112
+squaring allows us to run 1872 clock cycles for 192 bit squaring and 3093
 clock cycles for 256 bit squaring.  (1966 / 3253 clock cycles
 <a href="#AVR_SQUARING">[AVR_SQUARING]</a>).  Squaring code is interrupt safe too.</p></div>
-<div class="paragraph"><p>In the next table, there is  RSA calculation timing in clock cycles (normal RSA /
-precalculated P<sup>-1</sup> mod R and Q<sup>-1</sup> mod R) in key file, interrupt always
-enabled.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_modular_multiplicative_inversion">Modular multiplicative inversion</h3>
+<div class="paragraph"><p>Modular multiplicative inversion is based on left shift, similar to
+<a href="#Lorencz">[Lorencz]</a> or more similar to <a href="#Hars">[Hars]</a> shifting Euclidean algorithm.  AVR
+microcontroller shift/rotate instruction allow us to rotate 8 bit value only
+by one bit in one instruction cycle.  Original Hars algorithm is not usable
+without modifications (very slow repetitive rotations of V/S by <em>f</em>).  The
+goal is to minimize the number of rotations.</p></div>
+<div class="paragraph"><p>In each step of algorithm <em>U</em> and <em>V</em> is aligned (by left rotations) on
+highest non zero bit, then this bit is eliminated by subtraction.  <em>R</em> and
+<em>S</em> are kept updated similar to <em>U</em> and <em>V</em>.  This step is repeating, but
+align is done by right rotation, until bit size of <em>U</em> is bigger that bit
+size of <em>V</em>.  If this is not true, <em>U</em> and <em>V</em> (<em>R</em> and <em>S</em>) are swapped, and
+all rotations are returned back (right).  This procedure is repeating until
+bit size of <em>U</em> is zero or one (no inversion exists or inversion found).</p></div>
+<div class="paragraph"><p>The <em>U</em> and <em>V</em> are represented as unsigned number, but there are helper
+variables <em>sU</em> and <em>sV</em> for storing the signs of <em>U</em> and <em>V</em>.  <em>R</em> and <em>S</em>
+variables use 64 more bits (this is enough to use 1 more bit to represent
+two&#8217;s complement number, but arithmetics routines are unrolled and use 8 bytes
+step).</p></div>
+<div class="paragraph"><p>Only C code is available for now, ASM version is planned.  Implementation
+allows us to calculate inversion for even modulus too (this is needed for
+calculation of CRT components).  Code is designed to be small, the speed of
+the algorithm is not significant.  (In versions before 20171231, right shift
+binary Euclidean algorithm was used, but this doesn&#8217;t allows us to calculate
+CRT components because modulus is always even number.  This code is smaller
+as new code but is slower too.)</p></div>
+<div style="page-break-after:always"></div>
+</div>
+<div class="sect2">
+<h3 id="_modulo_operation">Modulo operation</h3>
+<div class="paragraph"><p>Operation uses binary division algorithm.  The rotate/shift operation, as
+mentioned before, is slow on AVR devices, table of 8 rotated modulus values
+are used to save lot of rotate instructions. AVR assembler version of this
+code need 262593 clock cycles for 1024 bit number (575021 clock cycles for
+1536, 1008281 clock cycles for 2048). Code run in  constant time.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_montgomery_exponentiation">Montgomery exponentiation</h3>
+<div class="paragraph"><p>For Montgomery exponentiation we need to calculate  <em>M = msg * r mod n</em> and
+<em>x = 1 * r mod n</em>.  Additionally we need <em>n<sup>/</sup></em> value calculated from <em>r *
+r<sup>-1</sup> - n * n<sup>/</sup> = 1</em>.  Here <em>r</em> is in form <em>r = 2<sup>k</sup></em>.  The smallest
+possible <em>k</em> is chosen so that <em>r &gt; n</em>.</p></div>
+<div class="paragraph"><p>For calculation of <em>n<sup>/</sup></em> modified Euclidean algorithm is used, there is
+similar table for <em>n</em> used as in modulo operation.  Code is in AVR
+assembler, calculation need only only 188300 clock cycles for 512 bit
+modulus length (400684 clock cycles for 768 bit, 694988 clock cycles for
+1024).</p></div>
+<div class="paragraph"><p><em>M</em> calculation uses already described  modulo operation.</p></div>
+<div class="paragraph"><p>For calculating <em>x = 1 * r mod n</em> similar code can be used as for
+calculating <em>M = msg * r mod n</em>, but we can use special property of <em>r</em> to
+avoid division in this calculation (<a href="#RSA_high_speed">[RSA_high_speed]</a> page 48, chapter 3.8.1.
+claims need of division in this step).</p></div>
+<div class="paragraph"><p>If <em>n &lt; 2<sup>k</sup> &lt; 2 * n</em>,  then <em>2<sup>k</sup> mod n = 2<sup>k</sup> - n</em>.  Here negated <em>n</em>
+(<em>0 - n</em>) can be used directly as <em>x</em>.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_ecc_operation_speed">ECC operation speed</h3>
+<div class="paragraph"><p>EC calculation uses projective coordinates.  Lot of code is inspired by NIST
+<a href="#NIST_ECC">[NIST_ECC]</a> and <a href="#OPENCRYPTOTOKEN">[OPENCRYPTOTOKEN]</a> EC point doubling is optimized for NIST
+curves and for secp256k1 curve.  EC point multiplication is designed as
+constant time, with multiplication window of 4 bits.  Point multiplication
+is blinded.  For each supported curve, a separate fast reduction algorithm
+is used. The secp521r1 curve is supported only on devices with 8KB RAM and
+more (ATmega 1284, xmega128A4U). Firmware for atmega128 microcontroller can
+be recompiled with two bits multiplication window, then secp521r1 is running
+on this device.</p></div>
 <table class="tableblock frame-all grid-all"
 style="
 width:80%;
 ">
-<caption class="title">Table 2. RSA private operation timing (in millions of clock cycles)</caption>
+<caption class="title">Table 2. ECDSA operation timing, blinded, in millions of clock cycles</caption>
+<col style="width:33%;">
+<col style="width:33%;">
+<col style="width:33%;">
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock"></p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">32 bit blind</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">not blinded</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">prime192v1</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">15,5</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">13,5</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">prime256v1</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">38,7</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">34,6</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">secp256k1</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">----</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">47,1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">secp384r1</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">82,9</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">76.8</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">secp521r1</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">140,9</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">133.8</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_rsa_operation_speed">RSA operation speed</h3>
+<div class="paragraph"><p>In the next table, there is  RSA calculation timing in clock cycles (normal
+RSA / precalculated P<sup>-1</sup> mod R and Q<sup>-1</sup> mod R) in key file, interrupt
+always enabled.  512 bit key is calculated by using 768 bit arithmetics,
+because 512 bit key is not safe today, it makes no sense to speed up this
+calculation by using 512 bit arithmetics.  Likewise, it does not make sense
+to speed up the calculation for small keys if exponentiation window is not
+optimal to key size - optimal window for key size 512/768 is 4 bits, not 5,
+but code uses fixed size defined at compilation time for all key sizes.</p></div>
+<div style="page-break-after:always"></div>
+<table class="tableblock frame-all grid-all"
+style="
+width:80%;
+">
+<caption class="title">Table 3. RSA private operation timing (in millions of clock cycles)</caption>
 <col style="width:16%;">
 <col style="width:16%;">
 <col style="width:16%;">
@@ -4920,15 +5297,15 @@ width:80%;
 <tr>
 <td class="tableblock halign-left valign-top" colspan="2" ><p class="tableblock"></p></td>
 <td class="tableblock halign-left valign-top" colspan="2" ><p class="tableblock">no blinding</p></td>
-<td class="tableblock halign-left valign-top" colspan="2" ><p class="tableblock">blinding</p></td>
+<td class="tableblock halign-left valign-top" colspan="2" ><p class="tableblock">precalc, blinding</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">key size</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">window</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">precalc</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">no precalc</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">precalc</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">no precalc</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock"></p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">Bellcore.prot</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="6" ><p class="tableblock"></p></td>
@@ -4936,24 +5313,24 @@ width:80%;
 <tr>
 <td class="tableblock halign-left valign-top" rowspan="3" ><p class="tableblock">512</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">2</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">21,10</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">21,33</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">22,99</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">23,21</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">20,58</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">20,80</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">22,45</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">23,38</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">4</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">18,12</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">18,34</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">19,67</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">19,89</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">17,60</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">17,82</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">19,14</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">20,07</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">5</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">18,54</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">18,76</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">20,06</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">20,28</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">18,01</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">18,23</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">19,52</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">20,46</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="6" ><p class="tableblock"></p></td>
@@ -4961,24 +5338,24 @@ width:80%;
 <tr>
 <td class="tableblock halign-left valign-top" rowspan="3" ><p class="tableblock">768</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">2</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">31,02</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">31,24</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">32,91</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">33,13</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">30,43</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">30,65</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">32,30</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">33,23</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">4</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">26,25</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">26,47</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">27,90</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">28,02</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">25,67</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">25,89</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">27,21</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">28,13</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">5</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">26,12</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">26,34</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">27,94</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">28,16</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">25,54</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">25,76</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">27,34</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">28,29</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="6" ><p class="tableblock"></p></td>
@@ -4986,24 +5363,24 @@ width:80%;
 <tr>
 <td class="tableblock halign-left valign-top" rowspan="3" ><p class="tableblock">1024</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">2</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">65,07</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">65,44</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">68,05</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">68,42</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">63,36</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">63,73</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">66,30</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">67,75</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">4</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">54,67</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">55,05</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">57,13</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">57,50</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">53,14</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">53,51</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">55,56</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">57,01</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">5</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">54,09</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">54,46</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">56,50</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">56,87</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">52,56</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">52,93</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">54,93</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">56,41</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="6" ><p class="tableblock"></p></td>
@@ -5011,24 +5388,24 @@ width:80%;
 <tr>
 <td class="tableblock halign-left valign-top" rowspan="3" ><p class="tableblock">1536</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">2</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">202,1</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">202,9</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">208,4</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">209,2</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">199,4</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">200,2</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">205,6</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">208,7</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">4</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">168,4</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">169,2</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">173,5</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">174,3</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">165,8</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">166,6</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">170,9</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">174,0</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">5</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">164,5</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">165,3</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">169,6</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">170,4</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">162,0</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">162,8</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">167,0</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">170,1</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="6" ><p class="tableblock"></p></td>
@@ -5036,76 +5413,49 @@ width:80%;
 <tr>
 <td class="tableblock halign-left valign-top" rowspan="3" ><p class="tableblock">2048</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">2</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">420,1</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">421,5</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">429,9</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">431,3</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">410,9</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">412,3</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">420,5</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">425,3</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">4</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">348,9</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">350,3</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">356,9</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">358,3</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">340,9</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">342,3</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">348,8</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">353,6</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">5</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">338,9</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">340,3</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">348,3</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">349,7</p></td>
-</tr>
-</tbody>
-</table>
-<table class="tableblock frame-all grid-all"
-style="
-width:80%;
-">
-<caption class="title">Table 3. ECDSA operation timing, blinded (in millions of clock cycles)</caption>
-<col style="width:50%;">
-<col style="width:50%;">
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">prime192v1</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">14,0</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">prime256v1</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">36,1</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">secp256k1</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">47,1</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">secp384r1</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">79,0</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">331,1</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">332,5</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">340,4</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">345,2</p></td>
 </tr>
 </tbody>
 </table>
 <div class="paragraph"><p>To reach this, lot of  assembler routines are used, especially Montgomery
-algo and function like mul256 mod 2<sup>256</sup>.  To get best possible performance,
-the 384, 512, 768 and 1024 bit squaring and multiplication are unrolled as
-possible, with respect to flash memory size in AVR.</p></div>
+algo and function like mul256 mod 2<sup>256</sup> (truncated multiplication).  To get
+best possible performance, the 384, 512, 768 and 1024 bit squaring and
+multiplication are unrolled as possible, with respect to flash memory size
+in AVR.</p></div>
 <div class="paragraph"><p>Code size: about 20 000 lines in AVR assembler, about 10000 lines in C. AVR
 flash in ATmega128 is occupied by ~ 63kB code, 64Kb is used as data space for
 card filesystem.</p></div>
-<div class="paragraph"><p>EC calculation uses projective coordinates.  Lot of code is inspired by NIST
-<a href="#NIST_ECC">[NIST_ECC]</a> and <a href="#OPENCRYPTOTOKEN">[OPENCRYPTOTOKEN]</a> EC point doubling is optimized for NIST
-curves and for secp256k1 curve.  EC point multiplication is designed as
-constant time, with multiplication window of 4 bits.  Point multiplication
-is blinded.  For each supported curve, a separate fast reduction algorithm
-is written.</p></div>
 <div style="page-break-after:always"></div>
 </div>
 </div>
+</div>
 <div class="sect1">
-<h2 id="appendixF">Appendix F: Code security</h2>
+<h2 id="appendixF">Appendix F: Cryptographic algorithm security</h2>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_rsa_security">RSA security</h3>
-<div class="paragraph"><p>There exists several types of side channels attack to RSA cryptosystem.</p></div>
-<div class="paragraph"><p>RSA implementation uses <a href="#CRT">[CRT]</a> (China Remainder Theorem).</p></div>
+<div class="paragraph"><p>OsEID implements several protections to generally known attacks to RSA
+cryptosystem. There exists several types of side channel attacks:</p></div>
+<div class="sect3">
+<h4 id="_simple_power_analysis_spa_timing_attack">Simple Power Analysis (SPA) / timing attack</h4>
+<div class="paragraph"><p>To prevent this type of attack, OsEID uses:</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -5114,79 +5464,149 @@ constant time calculation (time does not depend on key or message value)
 </li>
 <li>
 <p>
-Exponentiation per 2/4/5 bits prevents detection of zeros in exponent.
+Exponentiation uses fixed window size, window is not sliding, zeros
+   are not skipped.
 </p>
 </li>
 </ul></div>
-<div class="paragraph"><p>Simple Power Analysis is not effective to get keys from card but advanced
-techniques can be used (under certain conditions) to break card security and
-get private keys out of card.</p></div>
-<div class="paragraph"><p>There is support for exponent blinding in card, in default settings 24 bits
-random value is used to blind private exponent parts (dP and dQ).  Exponent
-blinding is a big barrier for lot of advanced techniques that allow use of
-side channel attack to expose private keys, but this is not enough.</p></div>
+<div class="paragraph"><p><em>RSA implementation in OsEID card is resistant to SPA / timing attack.</em></p></div>
+</div>
+<div class="sect3">
+<h4 id="_differential_power_analysis_dpa">Differential Power Analysis (DPA)</h4>
+<div class="paragraph"><p>To prevent this type of attack, OsEID uses:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+card uses exponent blinding
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>In default settings 24 bits random value is used to blind private exponent
+parts (dP and dQ).  Exponent blinding is a big barrier for lot of advanced
+techniques that allow use of side channel attack to expose private keys.</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
 Card does not support message blinding <a href="#RSA_MSG_BLINDING">[RSA_MSG_BLINDING]</a>
 </p>
 </li>
+</ul></div>
+<div class="paragraph"><p>Due constant time of operation (no variable length sliding window), it is
+not possible to use known attacks which could work due to the absence of a
+message blinding.</p></div>
+<div class="ulist"><ul>
 <li>
 <p>
-Differential Power Analysis (DPA) and Inferential Power Analysis (IPA) is
-  possible, but to really extract private key from card is very problematic.
+Card does not support modulus blinding
 </p>
 </li>
 </ul></div>
-<div class="paragraph"><p>Even when the exponential operation is protected by blinding, modular
-multiplicative inversion and modulus function in card firmware are not
-protected by blinding.  Even when both functions are performed in constant
-time, DPA and IPA can be used to extract some information about P and Q part
-of key.  In default firmware configuration, modular multiplicative inversion
-is calculated only in key upload operation, and therefore the security of
-this algorithm is for now irrelevant.</p></div>
-<div class="paragraph"><p>Of course, undetected errors in firmware can be used to get keys from card too!</p></div>
-<div class="paragraph"><p>Beware, there is an inherent danger in using the CRT. Search internet for
-single error in CRT implementation.</p></div>
-<div class="paragraph"><p>OsEID version 20171231 introduces RSA key generation. This operation is
-really slow, but is not subject to <a href="#ROCA">[ROCA]</a>. There is really random prime
-selection algorithm used for RSA key generation.</p></div>
+<div class="paragraph"><p>Modular reduction is needed to calculate Montgomery product like <span class="monospaced">1 * r mod
+n</span> and <span class="monospaced">M * r mod n</span>.  In both cases, <span class="monospaced">n</span> is secret value P or Q.  Due CRT
+calculation there are operations like <span class="monospaced">M mod P</span> and <span class="monospaced">M mod Q</span>.  Modular
+reduction is running in constant time, but is not blinded.  There is a way
+to extract power fingerprint from this operation.  It is necessary to run
+lot of power traces to get reliable power fingerprint from the same message.
+Several special formated messages must be traced to get some information
+about P/Q.  Because number of analyzed messages run over 30 000, this type
+of attack is not realistic for now.  More about this attack to this function
+can be found in <a href="#DPA_on_modular_reduction">[DPA_on_modular_reduction]</a>.</p></div>
+<div class="paragraph"><p>Because missing message blinding, there is another point that allow extract
+some information from card.  CRT recombination (Garner`s algorithm)
+produce result, that need conditional addition.  This addition is always
+realized, but power trace can be used to detect which of two possible
+results is used as return value.  It&#8217;s not easy to detect this step in one
+power trace, but the correlation of a very large number of power traces may
+leak some information about this step.</p></div>
+<div class="paragraph"><p>Montgomery product needs <span class="monospaced">n'</span> from equation <span class="monospaced">r* r^-1 - n * n' = 1</span>.  This
+calculation is running in constant time, but is not blinded.  There is a way
+to use DPA for extracting some information about P and Q from card.  In
+default firmware configuration, this calculation is running only in key
+upload operation, therefore the security of this algorithm is for now
+irrelevant.</p></div>
+<div class="paragraph"><p><em>RSA implementation in OsEID card is (reasonably) resistant to DPA attack</em></p></div>
+</div>
+<div class="sect3">
+<h4 id="_algorithm_problem">Algorithm problem</h4>
+<div class="paragraph"><p>RSA implementation uses <a href="#CRT">[CRT]</a> (China Remainder Theorem).  <a href="#SINGLE_ERROR">[SINGLE_ERROR]</a>
+in CRT implementation can expose private key.  This is also known as
+<a href="#BELLCORE">[BELLCORE]</a> attack. To prevent this type of attack, OsEID uses:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+result of exponentiation is checked by public exponent.
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>This extends the calculation time by approximately 2% for 2048 bits to 5%
+for 512 bits RSA.  CRT recombination is not protected, but injecting fault
+precisely into this point is very difficult.  Implementing full check
+(exponenting signature by public exponent) is problematic due RAM and FLASH
+size limitation.  There is not protection against wrong loaded P or Q from
+key storage!  There is about 20 msec interval for 1024 bit key for
+injecting error in message mod P/Q calculation and about 75 msec if 2048
+bit key is used. Intervals for OsEID token are about 2.5x shorter.</p></div>
+<div class="paragraph"><p>There is lot of methods to inject error into microcontroller calculation,
+fotons from laser/flash light can be used or some particle from radioactive
+isotope or electrostatic discharge etc.  Is very difficult to hit exact time
+and exact part of microcontroller (for example do not hit program counter but
+hit only some of registers or ALU, exact part of RAM etc.), lot of attempt
+is needed and lot of luck is needed.  Usually any of attempts ends with
+halted microcontroller or in worst case with total damage of
+microcontroller.</p></div>
+<div class="paragraph"><p><em>RSA implementation in OsEID card is (reasonably) resistant to Bellcore attack</em></p></div>
+</div>
+<div class="sect3">
+<h4 id="_rsa_key_generation">RSA key generation</h4>
+<div class="paragraph"><p>OsEID supports RSA key generation.  This operation is really slow, but is
+not subject to <a href="#ROCA">[ROCA]</a>.  There is really random prime selection algorithm
+used for RSA key generation.</p></div>
 <div class="paragraph"><p>Number from random generator is modified - highest  and lowest bit are set
-to 1 and this number is then tested by simple sieve (division by 1st 130
-primes) and then by Miller-Rabin test.  When both primes are found, they are
-tested if they are not too close to each other.  Then modulus is calculated,
-and tested if modulus is not too short.  Finally RSA components are
-calculated.  If some of test fails, both primes are discarded and two new
-primes are searched.  This handling prevents unnecessary bias of prime/modulus
-value.</p></div>
-<div class="paragraph"><p>Generation of 1024 bit key take in average about 6 minutes, but in worst case
-over 30 minutes. When generating a 2048 bit key you have to be very patient.
-Count with time 1 to 3 hours. (One Miller-Rabin test run in 13 second - there
-is really no way to run this faster with only one 8 bit multiplier in AVR)</p></div>
+to 1 and this number is then tested by simple sieve - division by 1st 130
+primes - and then Miller-Rabin test is used as primality test.  There is no
+hardware divisor in AVR devices, GCD is used to check all 130 primes in one
+step (product of 1st 130 primes can be fitted into 1024 bit value, this
+value is one operand in GCD, second operand is tested number).  When both
+primes are found, they are tested if they are not too close to each other.
+Then modulus is calculated, and tested if modulus is not too short.  Finally
+RSA components are calculated.  If some of test fails, both primes are
+discarded and two new primes are searched.  This handling prevents
+unnecessary bias of prime/modulus value.  The potential attack to
+sieve/primality test is then even more complicated too.</p></div>
 <div class="paragraph"><p>Keep in mind, if you generate a key, operation is not blinded.
-Exponentation in Miller-Rabin test, squaring, and CRT components calculation
+Exponentiation in Miller-Rabin test, squaring, and CRT components calculation
 (3x modular multiplicative inverse) is not blinded too.  SPA, DPA or IPA can
 be used to extract some informations about generated key.  Therefore it is
 recommended to generate key only in secure environment, if key security is
 important.</p></div>
-<div class="sect3">
-<h4 id="_ecc_security">ECC security</h4>
-<div class="paragraph"><p>Briefly, all implemented curves are not secure enough, more info at
-<a href="#SAFECURVES">[SAFECURVES]</a>. Apart from this information, implemented elliptic curves are
-widely used on the Internet.  Implementation of Curve25519 that is (for now
-:) ) safe is planned in future, but firstly opensc support must be available
-(patches for MyEID driver in opensc or totally new opensc driver for OsEID).</p></div>
-<div class="paragraph"><p>One of the major improvements compared to version 20161230 is EC calculation
-in a constant time (but not perfect constant time).  Still, there is also
-the possibility of using some side channel attack.  There is a support for
-point multiplication blinding in card.  Random 32 bit value is used to blind
-private key in point multiplication.  Still DPA/IPA can be used to extract
-some of sensitive information from other functions.  It is, however, much
-more problematic as the attack on not blinded point multiplication.</p></div>
-<div class="paragraph"><p>Card firmware implementation may also have some security bugs.  You have
-been warned.</p></div>
-<div class="paragraph"><p>(Do you know about these shortcomings in the world of commercial cards?)</p></div>
+<div class="paragraph"><p>Generation of 1024 bit key take in average about 4 minutes, but in worst case
+over 30 minutes. When generating a 2048 bit key you have to be very patient.
+Count with time 1 to 3 hours. (One Miller-Rabin test run in 13 second - there
+is really no way to run this faster with only one 8 bit multiplier in AVR)</p></div>
+<div class="paragraph"><p><em>RSA key generation is not resistant to side channels attack</em></p></div>
+<div class="paragraph"><p>Please read more about <a href="#RSA_attack_resistance">[RSA_attack_resistance]</a>, OsEID is hobby card, you
+can not expect perfect resistance to all attacks.</p></div>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_ecc_security">ECC security</h3>
+<div class="paragraph"><p>Briefly, all implemented curves are not secure enough, more info at
+<a href="#SAFECURVES">[SAFECURVES]</a>.  Apart from this information, implemented elliptic curves
+are widely used on the Internet.  If you have any doubts about the safety of
+NIST curves, please search internet about rigidity of NIST curves.  Some
+information can be found here: <a href="#NIST_RIGGED">[NIST_RIGGED]</a></p></div>
+<div class="paragraph"><p>To prevent SPA, EC calculation is running in constant time (but not perfect
+constant time, for example, modular multiplicative inversion run time
+depends on input numbers).  OsEID implementation also uses blinding in point
+multiplication.  Random 32 bit value is used to blind private key in point
+multiplication.  SPA attack is not very effective.  Still DPA/IPA can be
+used to extract some of sensitive information from other functions.  It is,
+however, much more problematic as the attack on not blinded point
+multiplication.</p></div>
+<div class="paragraph"><p><em>Card firmware implementation may also have some security bugs.  You have
+been warned.</em></p></div>
+<div class="paragraph"><p>(Do you know about these shortcomings in the world of commercial cards?)</p></div>
+<div style="page-break-after:always"></div>
 </div>
 </div>
 </div>
@@ -5285,6 +5705,21 @@ been warned.</p></div>
 </ul></div>
 </div>
 <div class="sect2">
+<h3 id="_modular_multiplicative_inversion_2">Modular Multiplicative Inversion</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+<a id="Hars"></a>[Hars] <a href="https://pdfs.semanticscholar.org/2e6e/fa126c2f1e719489df30b22c4ec42a7212c8.pdf">https://pdfs.semanticscholar.org/2e6e/fa126c2f1e719489df30b22c4ec42a7212c8.pdf</a>
+</p>
+</li>
+<li>
+<p>
+<a id="Lorencz"></a>[Lorencz] <a href="https://link.springer.com/content/pdf/10.1007%2F3-540-36400-5_6.pdf">https://link.springer.com/content/pdf/10.1007%2F3-540-36400-5_6.pdf</a>
+</p>
+</li>
+</ul></div>
+</div>
+<div class="sect2">
 <h3 id="_ecc">ECC</h3>
 <div class="ulist"><ul>
 <li>
@@ -5294,12 +5729,17 @@ been warned.</p></div>
 </li>
 <li>
 <p>
-<a id="NIST_ECC"></a>[NIST_ECC] <a href="https://www.iad.gov/iad/library/ia-guidance/ia-solutions-for-classified/algorithm-guidance/mathematical-routines-for-the-nist-prime-elliptic-curves.cfm">https://www.iad.gov/iad/library/ia-guidance/ia-solutions-for-classified/algorithm-guidance/mathematical-routines-for-the-nist-prime-elliptic-curves.cfm</a>
+<a id="NIST_ECC"></a>[NIST_ECC] <a href="https://apps.nsa.gov/iaarchive/library/ia-guidance/ia-solutions-for-classified/algorithm-guidance/mathematical-routines-for-the-nist-prime-elliptic-curves.cfm">https://apps.nsa.gov/iaarchive/library/ia-guidance/ia-solutions-for-classified/algorithm-guidance/mathematical-routines-for-the-nist-prime-elliptic-curves.cfm</a>
 </p>
 </li>
 <li>
 <p>
 <a id="SAFECURVES"></a>[SAFECURVES] <a href="https://safecurves.cr.yp.to/">https://safecurves.cr.yp.to/</a>
+</p>
+</li>
+<li>
+<p>
+<a id="NIST_RIGGED"></a>[NIST_RIGGED] <a href="https://crypto.stackexchange.com/questions/12898/is-there-a-feasible-method-by-which-nist-ecc-curves-over-prime-fields-could-be-i">https://crypto.stackexchange.com/questions/12898/is-there-a-feasible-method-by-which-nist-ecc-curves-over-prime-fields-could-be-i</a>
 </p>
 </li>
 </ul></div>
@@ -5319,7 +5759,7 @@ been warned.</p></div>
 </li>
 <li>
 <p>
-<a href="ftp://ftp.rsasecurity.com/pub/pdfs/tr201.pdf">ftp://ftp.rsasecurity.com/pub/pdfs/tr201.pdf</a>
+<a id="RSA_high_speed"></a>[RSA_high_speed] <a href="ftp://ftp.rsasecurity.com/pub/pdfs/tr201.pdf">ftp://ftp.rsasecurity.com/pub/pdfs/tr201.pdf</a>
 </p>
 </li>
 <li>
@@ -5347,10 +5787,55 @@ been warned.</p></div>
 <a id="ROCA"></a>[ROCA] <a href="https://github.com/crocs-muni/roca">https://github.com/crocs-muni/roca</a>
 </p>
 </li>
+<li>
+<p>
+<a id="SINGLE_ERROR"></a>[SINGLE_ERROR] <a href="https://www.cryptologie.net/article/371/fault-attacks-on-rsas-signatures/">https://www.cryptologie.net/article/371/fault-attacks-on-rsas-signatures/</a>
+</p>
+</li>
+<li>
+<p>
+<a id="BELLCORE"></a>[BELLCORE] <a href="https://eprint.iacr.org/2012/553.pdf">https://eprint.iacr.org/2012/553.pdf</a>
+</p>
+</li>
+<li>
+<p>
+<a id="DPA_on_modular_reduction"></a>[DPA_on_modular_reduction] <a href="https://link.springer.com/content/pdf/10.1007/3-540-36400-5_18.pdf">https://link.springer.com/content/pdf/10.1007/3-540-36400-5_18.pdf</a>
+</p>
+</li>
+<li>
+<p>
+<a id="RSA_attack_resistance"></a>[RSA_attack_resistance] <a href="https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Zertifizierung/Interpretationen/AIS_46_BSI_guidelines_SCA_RSA_V1_0_e_pdf.pdf">https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Zertifizierung/Interpretationen/AIS_46_BSI_guidelines_SCA_RSA_V1_0_e_pdf.pdf</a>
+</p>
+</li>
 </ul></div>
 </div>
 <div class="sect2">
-<h3 id="_usb_related_literature_softwware">USB related literature/softwware</h3>
+<h3 id="_rng">RNG</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="http://www.chronox.de/lrng/doc/lrng.pdf">http://www.chronox.de/lrng/doc/lrng.pdf</a>
+</p>
+</li>
+<li>
+<p>
+<a href="https://csrc.nist.gov/projects/random-bit-generation/documentation-and-software">https://csrc.nist.gov/projects/random-bit-generation/documentation-and-software</a>
+</p>
+</li>
+<li>
+<p>
+<a href="http://www.phy.duke.edu/~rgb/General/dieharder.php">http://www.phy.duke.edu/~rgb/General/dieharder.php</a>
+</p>
+</li>
+<li>
+<p>
+<a href="http://www.fourmilab.ch/random/">http://www.fourmilab.ch/random/</a>
+</p>
+</li>
+</ul></div>
+</div>
+<div class="sect2">
+<h3 id="_usb_related_literature_software">USB related literature/software</h3>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -5374,7 +5859,7 @@ been warned.</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
-<a href="http://www.usb.org/developers/docs/devclass_docs/DWG_Smart-Card_CCID_Rev110.pdf">http://www.usb.org/developers/docs/devclass_docs/DWG_Smart-Card_CCID_Rev110.pdf</a>
+<a href="https://usb.org.10-1-108-210.causewaynow.com/sites/default/files/DWG_Smart-Card_CCID_Rev110.pdf">https://usb.org.10-1-108-210.causewaynow.com/sites/default/files/DWG_Smart-Card_CCID_Rev110.pdf</a>
 </p>
 </li>
 <li>
@@ -5386,7 +5871,13 @@ been warned.</p></div>
 </div>
 <div class="sect2">
 <h3 id="_myeid">MyEID</h3>
-<div class="paragraph"><p><a id="MyEID"></a>[MyEID] <a href="https://webservices.aventra.fi/wordpress/wp-content/downloads/MyEID_PKI_JavaCard_Applet_Reference_Manual_2-1-4.pdf">https://webservices.aventra.fi/wordpress/wp-content/downloads/MyEID_PKI_JavaCard_Applet_Reference_Manual_2-1-4.pdf</a></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<a id="MyEID"></a>[MyEID] <a href="https://webservices.aventra.fi/wordpress/wp-content/downloads/MyEID_PKI_JavaCard_Applet_Reference_Manual_2-1-4.pdf">https://webservices.aventra.fi/wordpress/wp-content/downloads/MyEID_PKI_JavaCard_Applet_Reference_Manual_2-1-4.pdf</a>
+</p>
+</li>
+</ul></div>
 </div>
 <div class="sect2">
 <h3 id="_related_projects">Related projects</h3>
@@ -5470,15 +5961,16 @@ been warned.</p></div>
 <h2 id="appendixH">Appendix H: Opensc patches</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_opensc_0_17">Opensc 0.17</h3>
-<div class="paragraph"><p>Opensc 0.17 can detect all features of OsEID except of support for secp256k1.
-To use myeid driver for OsEID card you need to  configure opensc package
-only.  Please insert OsEID ATR  into <strong>opensc.conf</strong> file.</p></div>
+<h3 id="_opensc_0_17_018_and_0_19">Opensc 0.17, 018 and 0.19</h3>
+<div class="paragraph"><p>Opensc 0.17, 0.18 and 0.19 can detect all features of OsEID except of
+support for secp256k1.  To use myeid driver for OsEID card you need to
+configure opensc package only.  Please insert OsEID ATR into <strong>opensc.conf</strong>
+file.</p></div>
 <div class="sect3">
 <h4 id="_secp256k1_curve_support">secp256k1 curve support</h4>
 <div class="paragraph"><p>If you need secp256k1 support, minimal patch is needed.  Please read all
 comments about secp256k1 patch for opensc 0.16 (below).</p></div>
-<div class="paragraph"><p>For Opensc 0.17 following patch is suggested:</p></div>
+<div class="paragraph"><p>For Opensc 0.17, 0.18 and 0.19 following patch is suggested:</p></div>
 <div class="literalblock">
 <div class="content monospaced">
 <pre>--- opensc-0.17rc1/src/libopensc/card-myeid.c.orig     2017-06-13 13:23:53.000000000 +0200
@@ -5520,7 +6012,7 @@ comments about secp256k1 patch for opensc 0.16 (below).</p></div>
 <div class="sect3">
 <h4 id="_ecdh_operation">ECDH operation</h4>
 <div class="paragraph"><p>There is not working support for ECDH in opensc version below 0.17. Please
-use opensc 0.17 if you need ECDH operation.</p></div>
+use opensc 0.17 or newer if you need ECDH operation.</p></div>
 </div>
 <div class="sect3">
 <h4 id="_secp384r1_curve_support">secp384r1 curve support</h4>
@@ -5635,11 +6127,12 @@ keys etc.</p></div>
 <div class="sect1">
 <h2 id="appendixI">Appendix I: Random generator implementation</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Both  implementations (ATmega128  and xmega) use similar and very simple RND
-generator.  There is no seed, no hash function, no reseed function.</p></div>
+<div class="paragraph"><p>Both  implementations (ATmega128  and xmega) use similar and very simple
+random number generator.  There is no seed, no hash function, no reseed
+function.</p></div>
 <div class="paragraph"><p>Xmega uses 12 bit ADC to measure internal temperature sensor (to internal
 band gap reference).  Only bit 0 from ADC conversion is used as entropy
-value. About 5000 bytes per second can be generated.</p></div>
+value.</p></div>
 <div class="paragraph"><p>Generator tests by <strong>ent</strong> software from <a href="http://www.fourmilab.ch/random/">http://www.fourmilab.ch/random/</a> (This
 tests are made with small data blocks, random generator quality is here well
 demonstrated - RSA key generation and ECC cryptography uses small data
@@ -5678,27 +6171,38 @@ Serial correlation coefficient is 0.001352 (totally uncorrelated = 0.0).</pre>
 <div class="paragraph"><p>Unfortunately, similar result is not available on atmega with 10 bit ADC.
 There is no temperature sensor.  ADC is set to measure input voltage (to
 internal band gap reference).  Only bit 0 from ADC conversion is used as
-entropy value. About 900 bytes per second can be generated.</p></div>
-<div class="paragraph"><p>Result of this RND is not good - as shown in  Chi square distribution and
-other parameters.  To get better result, DES cipher is used on 16 bytes from
-ADC random data (8 bytes data, 8 bytes key) and resulting 8 bytes from DES
-cipher are used as return value from RND. This reduces speed of RND to about
-440 bytes per second.</p></div>
+entropy value.</p></div>
+<div class="paragraph"><p>Result of this RNG is not good.  Random generator is strongly affected by
+input voltage characteristics (this depends on card reader, USB host,
+cables, external interference etc..).  For example, in some environments
+random generated data are significantly biased - arithmetic mean value over
+160 or higher, Monte Carlo value for PI below 0.1, Chi square never exceed
+0.01 percent, etc&#8230;  In some other environment RNG data are relatively good,
+but still Chi square is wrong.</p></div>
+<div class="paragraph"><p>To get better result, DES cipher is used on 16 bytes from ADC random data (8
+bytes data, 8 bytes key) and resulting 8 bytes from DES cipher xored with
+key are used as return value from RNG.</p></div>
 <div style="page-break-after:always"></div>
+<div class="paragraph"><p>In next tables results for OsEID token/card and MyEID card can be compared.
+(Beware, in this table, result for atmega generator without DES is one of the
+good ones /one of the best, but still with very wrong chi square value)</p></div>
+<div class="paragraph"><p>Small data set 10408 bytes:</p></div>
 <table class="tableblock frame-all grid-all"
 style="
 width:80%;
 ">
-<col style="width:25%;">
-<col style="width:25%;">
-<col style="width:25%;">
-<col style="width:25%;">
+<col style="width:42%;">
+<col style="width:14%;">
+<col style="width:14%;">
+<col style="width:14%;">
+<col style="width:14%;">
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top" >                         </th>
 <th class="tableblock halign-left valign-top" >xmega      </th>
 <th class="tableblock halign-left valign-top" > atmega    </th>
-<th class="tableblock halign-left valign-top" > atmega+DES</th>
+<th class="tableblock halign-left valign-top" > atmega+DES </th>
+<th class="tableblock halign-left valign-top" >MyEID 3.3.3</th>
 </tr>
 </thead>
 <tbody>
@@ -5707,62 +6211,175 @@ width:80%;
 <td class="tableblock halign-left valign-top" ><p class="tableblock">1.000000</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">0.999766</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">0.999993</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">0.999997</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">Entropy per byte</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">7.981877</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">7.781246</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">7.982590</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">7.982021</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">Chi square (bit stream)</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">75.00</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">0.01</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">50.00</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">54.64</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">Chi square (byte stream)</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">50.00</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">0.01</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">50.00</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">38.19</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">Arithmetic mean (bit)</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">0.5003</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">0.5090</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">0.5016</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">0.5010</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">Arithmetic mean (byte)</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">127.4115</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">123.8805</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">128.1469</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">127.4539</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">Serial correlation (bit)</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">-0.000145</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">0.111164</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">0.004077</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">0.000332</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">Serial correlation (byte)</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">0.001352</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">0.046713</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">-0.009899</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">0.005033</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">Monte Carlo value for Pi</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">3.155709343</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">3.158016148</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">3.106751298</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">3.111367571</p></td>
 </tr>
 </tbody>
 </table>
-<div class="paragraph"><p>Tests with big data sets (100MB) were made by <strong>dieharder</strong> software
+<div class="paragraph"><p>Big data set (about 100 MBytes):</p></div>
+<table class="tableblock frame-all grid-all"
+style="
+width:80%;
+">
+<col style="width:33%;">
+<col style="width:33%;">
+<col style="width:33%;">
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" >                         </th>
+<th class="tableblock halign-left valign-top" >xmega      </th>
+<th class="tableblock halign-left valign-top" > atmega+DES</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">Entropy per bit</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">1.000000</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">1.000000</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">Entropy per byte</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">7.999998</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">7.999998</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">Chi square (bit stream)</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">41.54</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">78.08</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">Chi square (byte stream)</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">41.47</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">23.43</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">Arithmetic mean (bit)</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">0.5000</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">0.5000</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">Arithmetic mean (byte)</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">127.5091</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">127.4966</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">Serial correlation (bit)</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">0.000010</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">0.000017</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">Serial correlation (byte)</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">-0.000078</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">-0.000194</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">Monte Carlo value for Pi</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">3.140210247</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">3.141706616</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph"><p>More tests with big data sets (100MB) were made by <strong>dieharder</strong> software
 (<a href="http://www.phy.duke.edu/~rgb/General/dieharder.php">http://www.phy.duke.edu/~rgb/General/dieharder.php</a>).</p></div>
 <div class="paragraph"><p>(In doc directory you can found output from <strong>dieharder</strong> software for card and token
-RND.)</p></div>
+RNG.)</p></div>
+<div class="sect2">
+<h3 id="_random_generator_speed">Random generator speed</h3>
+<div class="paragraph"><p>Speed measurement is only approximate, speed depend on card reader, 3.8MHz reader was used.
+USB utilization  also have an impact on speed tests.</p></div>
+<table class="tableblock frame-all grid-all"
+style="
+width:80%;
+">
+<col style="width:42%;">
+<col style="width:14%;">
+<col style="width:14%;">
+<col style="width:14%;">
+<col style="width:14%;">
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" >                  </th>
+<th class="tableblock halign-left valign-top" > xmega        </th>
+<th class="tableblock halign-left valign-top" > atmega       </th>
+<th class="tableblock halign-left valign-top" > atmega+DES   </th>
+<th class="tableblock halign-left valign-top" > MyEID 3.3.3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">240 bytes in APDU</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">4661 bytes/sec</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">1346 bytes/sec</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">640 bytes/sec</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">2670 bytes/sec</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">32 bytes in APDU</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">750 bytes/sec</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">340 bytes/sec</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">225 bytes/sec</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">340 bytes/sec</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph"><p>Note: OsEID card uses T0 protocol, MyEID and OsEID token use T1 protocol.</p></div>
 <div style="page-break-after:always"></div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -5848,7 +6465,213 @@ S-box, inverse S-box and expanded key).  Code is compact, does not use
 context and therefore the S-box must be calculated repeatedly for every run
 of AES.  Speed is sufficient, about 40 000 clock cycles for one AES encipher
 or decipher with 256 bit key.</p></div>
+<div style="page-break-after:always"></div>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="appendixL">Appendix L: RSA calculation in <em>genius</em></h2>
+<div class="sectionbody">
+<div class="paragraph"><p>This part of doc is only for explanation how RSA cryptosystem works.
+Especially, here is explained how message and exponent blinding can be
+implemented and how can single error in CRT calculation expose P and Q.</p></div>
+<div class="paragraph"><p>To run calculation from this appendix, please use <em>genius</em>  calculator
+available from <a href="http://www.jirka.org/genius.html">http://www.jirka.org/genius.html</a>.  Code from this appendix
+can be pasted directly into <em>genius</em> console. To track calculation, do
+not paste whole code at once, code is divided by lines with asteriskses,
+paste only partial code and check results in <em>genius</em> console.</p></div>
+<div class="literalblock">
+<div class="content monospaced">
+<pre># This is part of OsEID project documentation,
+# https://sourceforge.net/projects/oseid/
+.
+#
+#
+# key calculation: choice prime numbers p,q, calculate totient
+# ------------------------------------------------------------
+.
+p = 251
+q = 337
+totient = (p - 1) * (q - 1)
+
+# choice public exponent
+# most commonly used public exponent is 65537
+# --------------------------------------------------------
+.
+pub_exp = 65537
+
+# calculate private exponent
+# --------------------------
+.
+
+priv_exp = pub_exp ^ -1 mod totient
+# calculate n
+n = p * q
+
+# calculate  CRT components
+# ------------------------
+.
+dP = (pub_exp^-1) mod (p-1)
+dQ = (pub_exp^-1) mod (q-1)
+qInv = q ^ -1  mod p
+
+# encipher and decipher
+# ---------------------
+.
+msg = 41444
+ciphertext = msg ^ pub_exp mod n
+plaintext = ciphertext ^ priv_exp mod n
+
+#
+# if calculation is correct, plaintext is 41444
+# *****************************************************************
+.
+
+# decipher with message blinding
+# ------------------------------
+.
+blind_msg_rnd = 54       # random number
+
+blind_cipher_msg_rnd = blind_msg_rnd ^ pub_exp mod n
+blind_cipher         = blind_cipher_msg_rnd * ciphertext mod n
+blind_plain          = blind_cipher ^ priv_exp mod n
+
+blind_msg_rnd_inv = blind_msg_rnd ^ -1 mod n
+plaintext         = blind_msg_rnd_inv * blind_plain mod n
+
+#
+# if calculation is correct, plaintext is 41444
+# *****************************************************************
+.
+
+# decipher with exponent blinding
+# -------------------------------
+.
+blind_exp_rnd = 56      # random number
+
+blind_exp = blind_exp_rnd * totient + priv_exp
+plaintext = ciphertext ^ blind_exp mod n
+
+#
+# if calculation is correct, plaintext is 41444
+# *****************************************************************
+.
+
+# CRT decipher
+# ------------
+.
+cipher_m1 =  ciphertext mod p
+cipher_m2 =  ciphertext mod q
+
+m1 = cipher_m1 ^ dP mod p
+m2 = cipher_m2 ^ dQ mod q
+h = qInv * (m1 - m2) mod p
+plaintext = m2 + h * q
+#
+# if calculation is correct, plaintext is 41444
+# *****************************************************************
+.
+
+# CRT single error explanation:
+# -----------------------------
+# calculation of m2 fail:
+.
+m2 = 123
+h = qInv * (m1 - m2) mod p
+plaintext = m2 + h * q
+# failed plaintext is used to reconstruct 'p'
+# -------------------------------------------
+.
+reconstructed_p = gcd (plaintext - msg, n)
+reconstructed_q = n / rp
+#
+# if calculation is correct, 'p' = 251 and 'q' = 337
+# message blinding or exponent blinding does not eliminate single error!
+# *****************************************************************
+.
+# CRT decipher with message blinding
+# ----------------------------------
+cipher_m1 =  ciphertext mod p
+cipher_m2 =  ciphertext mod q
+
+blind_msg_rnd = 54     #random number
+
+blind_msg_p = blind_msg_rnd ^ pub_exp mod p
+blind_cipher_p = blind_msg_p * cipher_m1
+blind_cipher_m1 = blind_cipher_p mod p
+
+blind_msg_q = blind_msg_rnd ^ pub_exp mod q
+blind_cipher_q = blind_msg_q * cipher_m2
+blind_cipher_m2 = blind_cipher_q mod q
+
+blind_m1 = blind_cipher_m1 ^ dP mod p
+blind_m2 = blind_cipher_m2 ^ dQ mod q
+
+blind_inv_msg = blind_msg_rnd ^ -1 mod n
+
+blind_inv_msg_p = blind_inv_msg mod p
+m1 = blind_m1 * blind_inv_msg_p mod p
+
+blind_inv_msg_q = blind_inv_msg mod q
+m2 = blind_m2 * blind_inv_msg mod q
+
+h = qInv * (m1 - m2) mod p
+plaintext = m2 + h * q
+#
+# if calculation is correct, plaintext is 41444
+# *****************************************************************
+.
+
+# similar, but unblinding after recombination:
+.
+h = qInv * (blind_m1 - blind_m2) mod p
+plaintext_blindend = blind_m2 + h * q
+plaintext = plaintext_blindend * blind_inv_msg mod n
+
+#
+# if calculation is correct, plaintext is 41444
+# *****************************************************************
+.
+
+# CRT decipher with message and exponent blinding
+# -----------------------------------------------
+cipher_m1 =  ciphertext mod p
+cipher_m2 =  ciphertext mod q
+
+blind_msg_rnd = 54
+
+blind_msg_p = blind_msg_rnd ^ pub_exp mod p
+blind_cipher_p = blind_msg_p * cipher_m1
+blind_cipher_m1 = blind_cipher_p mod p
+
+blind_msg_q = blind_msg_rnd ^ pub_exp mod q
+blind_cipher_q = blind_msg_q * cipher_m2
+blind_cipher_m2 = blind_cipher_q mod q
+
+blind_dP_rnd = 34
+blind_dQ_rnd = 89
+
+blind_dP = dP + blind_dP_rnd * (p -1)
+blind_dQ = dQ + blind_dQ_rnd * (q -1)
+
+blind_m1 = blind_cipher_m1 ^ blind_dP mod p
+blind_m2 = blind_cipher_m2 ^ blind_dQ mod q
+
+blind_inv_msg = blind_msg_rnd ^ -1 mod n
+
+blind_inv_msg_p = blind_inv_msg mod p
+m1 = blind_m1 * blind_inv_msg_p mod p
+
+blind_inv_msg_q = blind_inv_msg mod q
+m2 = blind_m2 * blind_inv_msg mod q
+
+h = qInv * (m1 - m2) mod p
+plaintext = m2 + h * q
+#
+# if calculation is correct, plaintext is 41444
+# *****************************************************************
+.</pre>
+</div></div>
 </div>
 </div>
 </div>
@@ -5856,7 +6679,7 @@ or decipher with 256 bit key.</p></div>
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2018-02-08 13:39:39 CET
+ 2019-01-02 09:22:10 CET
 </div>
 </div>
 </body>
