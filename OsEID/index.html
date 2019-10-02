@@ -769,7 +769,7 @@ asciidoc.install(2);
 <h1>OsEID smart card &amp; OsEID token</h1>
 <span id="author">Peter Popovec</span><br>
 <span id="email" class="monospaced">&lt;<a href="mailto:popovec.peter@gmail.com">popovec.peter@gmail.com</a>&gt;</span><br>
-<span id="revdate">Fri Sep  6 14:01:00 CEST 2019</span>
+<span id="revdate">Mon Sep 30 09:59:53 CEST 2019</span>
 <div id="toc">
   <div id="toctitle">Table of Contents</div>
   <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
@@ -1068,6 +1068,16 @@ experimental support for symmetric encrypt/decrypt - DES and AES
 </li>
 <li>
 <p>
+experimental support for key unwrap
+</p>
+</li>
+<li>
+<p>
+experimental support for key wrap
+</p>
+</li>
+<li>
+<p>
 experimental challenge response PIN
 </p>
 </li>
@@ -1093,6 +1103,12 @@ no 224 bit NIST curve
 </li>
 <li>
 <p>
+no support for automatic delete of session objects
+  (please read MyEID 2.3.0 referene manual)
+</p>
+</li>
+<li>
+<p>
 slow RSA
 </p>
 </li>
@@ -1109,9 +1125,9 @@ MyEID applet version 4.5.X allow use RSA keys up to 4096 bits, OsEID
 </p>
 </li>
 </ul></div>
-<div class="paragraph"><p>(experimental = feature is supported by OsEID card, but original MyEID
-card function can work differently. There is no enough information in
-MyEID applet reference manual 2.1.4 and no OpenSC implementation to test
+<div class="paragraph"><p>experimental = feature is supported by OsEID card, but original MyEID card
+function can work differently.  There is no enough information in MyEID
+applet reference manual 2.1.4/2/2.3.0 and no OpenSC implementation to test
 all functions.</p></div>
 <div class="paragraph"><p>OsEID disadvantages to MyEID card, applet version below 3.5:</p></div>
 <div class="paragraph"><p>(MyEID in version below 3.5 does not support EC cryptography)</p></div>
@@ -1123,8 +1139,8 @@ slow RSA
 </li>
 </ul></div>
 <div class="paragraph"><p>For a comparison, here is table showing the execution time of RSA decrypt
-operation (time in seconds) for MyEID (3.3.3), OsEID and OsEID with exponent
-blinding turned on:</p></div>
+operation (time in seconds) for MyEID (3.3.3), OsEID (with exponent blinding
+turned on):</p></div>
 <div class="literalblock">
 <div class="content monospaced">
 <pre>pkcs11-tool --decrypt --slot 1 -m RSA-PKCS ..</pre>
@@ -1133,6 +1149,7 @@ blinding turned on:</p></div>
 style="
 width:80%;
 ">
+<caption class="title">Table 1. OsEID/MyEID RSA speed comparation</caption>
 <col style="width:37%;">
 <col style="width:12%;">
 <col style="width:12%;">
@@ -1196,6 +1213,7 @@ ECC speed is comparable to MyEID
 style="
 width:80%;
 ">
+<caption class="title">Table 2. OsEID/MyEID ECC speed comparation</caption>
 <col style="width:42%;">
 <col style="width:14%;">
 <col style="width:14%;">
@@ -1402,7 +1420,7 @@ found in the table below.</p></div>
 style="
 width:80%;
 ">
-<caption class="title">Table 1. Mapping card / microcontroller / ISP contacts</caption>
+<caption class="title">Table 3. Mapping card / microcontroller / ISP contacts</caption>
 <col style="width:33%;">
 <col style="width:33%;">
 <col style="width:33%;">
@@ -1907,6 +1925,7 @@ this project.</p></div>
 <div class="sect2">
 <h3 id="_i_found_a_bug_in_oseid_card_where_can_i_report_it">I found a bug in OsEID card, where can I report it ?</h3>
 <div class="paragraph"><p>You can contact me (author) by email &lt;<a href="mailto:popovec.peter@gmail.com">popovec.peter@gmail.com</a>&gt;</p></div>
+<div style="page-break-after:always"></div>
 </div>
 </div>
 </div>
@@ -2091,23 +2110,28 @@ values in procedure byte are not allowed.</p></div>
 know a priori the direction of transfer&#8230; How this can be fulfilled ?</p></div>
 <div class="sect3">
 <h4 id="_from_reader_view_only_short_cases_of_apdu">From reader view (only short cases of APDU):</h4>
-<div class="paragraph"><p><strong>CASE 1</strong> (APDU length 4 bytes) - no Lc, no Le.  (Nc=0, Ne=0).  Because header
-length is 5 bytes, P3 byte is set to 00.  Header is sent to card.  Expected
-response is 2 bytes SW1,SW2.  After receiving procedure byte, reader test
-this byte (NULL,INS,SW), and if this is not SW, new procedure byte is
-waiting.</p></div>
-<div class="paragraph"><p><strong>CASE 2</strong> (APDU length 5 bytes), header is sended to card, P3 represent the Le,
-Lc is not present.  Expected response length is P3 + 2 (SW1,SW2) bytes, for
-P3=0, 256 +2 bytes.  After receiving procedure byte, reader test this byte,
-and if this is INS, reader reads expected response bytes. Of course, card
-may return different size of response as expected, this is not an error.</p></div>
-<div class="paragraph"><p><strong>CASE 3</strong> (APDU length 5 + P3 bytes), header is sended to card, P3 represent
-the Lc, Le is not present.  Expected response is 2 bytes (SW1,SW2).  After
-receiving procedure byte, reader test this byte, and if this is INS, reader
-transmit P3 bytes (DATA field of APDU) to card, then new procedure byte is
-waiting.</p></div>
-<div class="paragraph"><p><strong>CASE 4</strong> (APDU length 5 + P3 + 1 bytes) - same as for CASE 3 (there is no way
-to transport Le to card).</p></div>
+<div class="paragraph"><p><strong>CASE 1</strong> (APDU length 4 bytes) - no <strong>Lc</strong>, no <strong>Le</strong>.  (Nc = 0, Ne = 0).
+Because header length is 5 bytes, P3 byte is set to 00.  Header is sent to
+card.  Card does not expect data field of APDU because P3 must be
+interpreted as <strong>Le</strong> field (<strong>Lc</strong> field is not allowed to be zero).  T0
+protocol does not allow us to inform card about Ne = 0 - P3 is interpreted
+as <strong>Le</strong> field and card accept this as Ne = 256.</p></div>
+<div class="paragraph"><p>Expected response is 2 bytes SW1,SW2.  After receiving procedure byte,
+reader test this byte (NULL,INS,SW), and if this is not SW, new procedure
+byte is waiting.</p></div>
+<div class="paragraph"><p><strong>CASE 2</strong> (APDU length 5 bytes), header is sent to card, P3 represent the
+<strong>Le</strong>, <strong>Lc</strong> is not present.  Expected response length is P3 + 2 (SW1,SW2)
+bytes, for P3=0, 256 +2 bytes.  After receiving procedure byte, reader test
+this byte, and if this is INS, reader reads expected response bytes.  Of
+course, card may return different size of response as expected, this is not
+an error.</p></div>
+<div class="paragraph"><p><strong>CASE 3</strong> (APDU length 5 + P3 bytes), header is sent to card, P3 represent
+the <strong>Lc</strong>, <strong>Le</strong> is not present.  Expected response is 2 bytes (SW1,SW2).
+After receiving procedure byte, reader test this byte, and if this is INS,
+reader transmit P3 bytes (DATA field of APDU) to card, then new procedure
+byte is waiting.</p></div>
+<div class="paragraph"><p><strong>CASE 4</strong> (APDU length 5 + P3 + 1 bytes) - same as for CASE 3 (there is no
+way to transport <strong>Le</strong> to card).</p></div>
 <div class="paragraph"><p>Card assumes that <strong>Ne</strong> = 256 in this case.  Card prepares response
 data and signalize back to reader how many data bytes can be returned in
 next command ( by SW1 = 0x61 or SW1=0x6C, SW2 is length of data, if SW2 is 0,
@@ -2117,10 +2141,10 @@ data, and <strong>Ne</strong> is handled in procedure that generated GET RESPONS
 </div>
 <div class="sect3">
 <h4 id="_from_card_view">From card view:</h4>
-<div class="paragraph"><p>Header 5 bytes, card receives header. If P3 is 0, this can not be a <strong>Lc</strong>
-field, P3 is then accepted as <strong>Le</strong>. If <strong>Lc</strong> is not present in APDU, then
-DATA field is absent too. This correspond to CASE 1 or CASE 2 APDU with
-<strong>Ne</strong>= 256.</p></div>
+<div class="paragraph"><p>Card is waiting for 5 bytes from reader.  These bytes represent the header
+of APDU.  If P3 is 0, this can not be a <strong>Lc</strong> field, P3 is then accepted as
+<strong>Le</strong>.  If <strong>Lc</strong> is not present in APDU, then DATA field is absent too.  This
+correspond to CASE 1 or CASE 2 APDU with <strong>Ne</strong>= 256.</p></div>
 <div class="paragraph"><p>If P3 != 0, this is CASE 2 or CASE 3 or CASE 4.  We need INS to determine
 APDU CASE 2 - only this case need transfer from card to reader.  For CASEs
 3,4 <strong>Ne</strong> is assumed to be 256, P3 is <strong>Lc</strong>/<strong>Nc</strong>.  For CASE 2 <strong>Nc</strong> is 0, P3 is
@@ -2129,11 +2153,11 @@ APDU CASE 2 - only this case need transfer from card to reader.  For CASEs
 <div class="paragraph"><p>From ISO7816-4 all commands where Nc=0 can be assumed as candidate for APDU
 CASE 2.</p></div>
 <div style="page-break-after:always"></div>
-<div class="paragraph"><p>Table of allowed cases for INS. (OsEID = supported INS in OsEID card)</p></div>
 <table class="tableblock frame-all grid-all"
 style="
 width:100%;
 ">
+<caption class="title">Table 4. Allowed cases for INS byte</caption>
 <col style="width:9%;">
 <col style="width:45%;">
 <col style="width:9%;">
@@ -2506,6 +2530,7 @@ width:100%;
 </tr>
 </tbody>
 </table>
+<div class="paragraph"><p>OsEID column is checked for all INS supported by OsEID.</p></div>
 <div class="paragraph"><p>Some CASEs are marked by ?, if you need exact explanation about this
 INS/APDU CASE, you need to read whole ISO7816.  ISO7816 is not precise
 enough, for example:</p></div>
@@ -2522,6 +2547,10 @@ generate status 0x61XX and then GET RESPONSE is used to return data.</p></div>
 <div class="paragraph"><p>Card does not have enough information about APDU case after header is
 received.  Still INS and P3 can be used to allow transport of extended APDUs
 over T0 protocol.</p></div>
+<div class="paragraph"><p>There is no way to transport command APDU with data field &gt; 255.  Response
+APDU can trasport at maximum 256 byte of response in one APDU.  In some
+cases (Nc&lt;256, Ne&gt;256), extended APDU can be mapped to multiple APDUs to
+allow receive more than 256 bytes of response.</p></div>
 <div class="paragraph"><p>From card view:</p></div>
 <div class="paragraph"><p>If card receives P3 == 0, then card assumes CASE 1 or CASE2S/E - same action
 as for short APDUs.  INS can be used to determine CASE 1 or CASE 2S/E.  For
@@ -2824,7 +2853,8 @@ about this, please read ISO7816-3/11.  APDU is splitted into <strong>I</strong> 
 then reassembled in card back to original APDU.  State machine for this can
 be found in opensource project <a href="#CCIDusb">[CCIDusb]</a>, in directory src/towitoko/ and
 src/openct/proto-t1.c.  Reverse joining of <strong>I</strong> frames can be found in OsEID
-sources, in file targets/xmega128a4u/ccid.c.</p></div>
+sources, in file targets/xmega128a4u/ccid.c. Of course, response APDU is
+splitted in card and reassembed in reader/host.</p></div>
 <div class="paragraph"><p>If command APDU uses short case 4 (described above), reader must support at
 minimal transport for 4+1+255+1 = 261 bytes.</p></div>
 <div class="paragraph"><p>If command APDU uses extended case 4, then minimal transport size is
@@ -2835,10 +2865,6 @@ transport (dwMaxCCIDMsgLen = 271). CCID header need 10 bytes overhead, then
 maximal message length is 261 bytes. Because <strong>I</strong> frames are chained, there
 is no limitation in transport of extended APDU over T1 protocol, T0 is
 limited - max 255 bytes in DATA field.</p></div>
-<div class="paragraph"><p>OsEID card internally uses only T0 protocol, OsEID token uses wrapper that
-transform T1 protocol to T0 protocol, i.e. automatically inject <strong>GET RESPONSE</strong>
-command after card generated 0x61XX response. <strong>Le</strong> from APDU is not used for
-now.</p></div>
 <div class="paragraph"><p>In this documentation APDU - TPDU mapping is described for all commands (T0
 protocol).  Bytes CLA, INS, P1, P2 from APDU is mapped to TPDU without
 change, byte P3 in TPDU is mapped to <strong>Lc</strong> or <strong>Le</strong> field of APDU.</p></div>
@@ -3018,76 +3044,88 @@ is absent, ..  the response data field shall also be absent."</td>
 </tr></table>
 </div>
 <div class="paragraph"><p>Select file is controlled by P1, P2 parameters. There are several P1, P2
-valid combinations. For some of combinations LC != 0 and data field must
+valid combinations. For some of combinations Lc != 0 and data field must
 contain specific data</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
-P1 = 0, P2 == 0, LC = 0:
+P1 = 0, P2 == 0, P3 = 0, no Lc field
+  T0 protocol: CASE 2 APDU, P3 must be set to 0 - corresponds to Ne=256
+  T1 protocol: CASE 1 APDU, there is no Lc/DATA/Le field
+  T1 protocol: CASE 2 APDU, P3 correspond to Le field
   Select MF (0x3f00)
 </p>
 </li>
+</ul></div>
+<div class="paragraph"><p>For rest of commands P2 is 0 or 0x0c:</p></div>
+<div class="ulist"><ul>
 <li>
 <p>
-P1 = 3, LC = 0:
+P1 = 3, P3 = 0, no Lc field
+  T0 protocol: CASE 2 APDU, P3 must be set to 0 - corresponds to Ne=256
+  T1 protocol: CASE 1 APDU, there is no Lc/DATA/Le field
+  T1 protocol: CASE 2 APDU, P3 correspond to Le field
   Select parent DF of the current DF
 </p>
 </li>
 <li>
 <p>
-P1 = 8, LC &gt;=2, LC even, Data represents IDs of path to file:
-  Select by path from MF
+P1 = 8, P3/Lc &gt;=2, Lc even, Data represents IDs of path to file:
+  Select by path from MF (CASE 3/4)
 </p>
 </li>
 <li>
 <p>
-P1 = 9, LC &gt;=2, LC even, Data represents IDs of path to file:
-  Select by path from current DF
+P1 = 9, P3/Lc &gt;=2, Lc even, Data represents IDs of path to file:
+  Select by path from current DF (CASE 3/4)
 </p>
 </li>
 <li>
 <p>
-P1 = 4, LC &gt;0, LC &lt; 17, Data represents filename:
-  Select DF by name
+P1 = 4, P3/Lc &gt;0, Lc &lt; 17, Data represents filename:
+  Select DF by name (CASE 3/4)
 </p>
 </li>
 <li>
 <p>
-P1 = 1, LC = 2, Data file ID:
-  Select child DF
+P1 = 1, P3/Lc = 2, Data file ID:
+  Select child DF (CASE 3/4)
 </p>
 </li>
 <li>
 <p>
-P1 = 2, LC = 2, Data file ID:
-  Select EF under current DF
+P1 = 2, P3/Lc = 2, Data file ID:
+  Select EF under current DF (CASE 3/4)
 </p>
 </li>
 <li>
 <p>
-P1 = 0, P2 = 0, LC = 2, Data = 0x3f00:
-  Select MF
+P1 = 0, P2 = 0, P3/Lc = 2, Data = 0x3f00:
+  Select MF (CASE 3/4)
 </p>
 </li>
 <li>
 <p>
-P1 = 0, LC = 2, Data = ID:
+P1 = 0, P3=Lc = 2, Data = ID:
   Firstly the file with ID in all children of selected DF is searched, if ID is found,
   FCI/status is returned.  If previous search fails, test if parent of selected
   file matches ID.  If this fails too, file in neighbors of selected
-  file is searched.
+  file is searched. (CASE 3/4)
 </p>
 </li>
 <li>
 <p>
-P2 = 0x0c - do not return <a href="#FCI">[FCI]</a>/<a href="#FCP">[FCP]</a>/<a href="#FMD">[FMD]</a>
+P2 = 0x0c - do not return <a href="#FCI">[FCI]</a>/<a href="#FCP">[FCP]</a>/<a href="#FMD">[FMD]</a>. This is usefull for T0
+  protocol, where Ne is assumed to be 256.  Same functionality can be achieved
+  if T1 protocol is used and <strong>Le</strong> is not present in APDU.
 </p>
 </li>
 </ul></div>
 <div class="paragraph"><p>If select command failed, last correctly selected file remains selected.</p></div>
 <div class="paragraph"><p>MyEID difference: MyEID (according MyEID reference manual 2.1.4) does not
-support values 1,2,3 for P1.  MyEID does not support P2 = 0x0c.</p></div>
-<div style="page-break-after:always"></div>
+support values 1,2,3 for P1.  MyEID does not support P2 = 0x0c.
+MyEID uses T1 protocol, FCI is always returned even Le is not present in
+APDU (tested on MyEID 3.3.3/4.0.1).</p></div>
 </div>
 <div class="sect2">
 <h3 id="_create_file">CREATE FILE</h3>
@@ -3253,7 +3291,14 @@ can be marked as valid, but not all parts of key are in file.  For EC key
 this is no problem if public part is missing, but incomplete RSA key then
 generates error in RSA security operation.
 
-2nd byte: 0x00 RFU</pre>
+2nd byte:
+00h     - default
+
+OsEID support is planed for next releases (2020XXXX):
+
+bit 0:  if set, object is marked as session object, after card reset
+        object is automatycaky removed from card
+bi7 3:  for extractable keys, if set, key can be wrapped</pre>
 </div></div>
 <div class="listingblock">
 <div class="title">EF</div>
@@ -3334,7 +3379,7 @@ attributes set to 01 1F FF:</p></div>
 </ul></div>
 </dd>
 <dt class="hdlist1">
-<strong>if LC = 0</strong> 
+<strong>if Lc = 0</strong> 
 </dt>
 <dd>
 <div class="ulist"><ul>
@@ -3346,7 +3391,7 @@ attributes set to 01 1F FF:</p></div>
 </ul></div>
 </dd>
 <dt class="hdlist1">
-<strong>if transport of LC bytes of data fail</strong> 
+<strong>if transport of Lc bytes of data fail</strong> 
 </dt>
 <dd>
 <div class="ulist"><ul>
@@ -3456,6 +3501,7 @@ three environments.  Please check <strong>SELECT</strong> command to find how th
 selection is handled.</td>
 </tr></table>
 </div>
+<div style="page-break-after:always"></div>
 </div>
 <div class="sect2">
 <h3 id="_delete_file">DELETE FILE</h3>
@@ -3558,7 +3604,7 @@ OsEID card for now.</p></div>
 </ul></div>
 </dd>
 <dt class="hdlist1">
-<strong>if LC != 0</strong> 
+<strong>if Lc != 0</strong> 
 </dt>
 <dd>
 <div class="ulist"><ul>
@@ -3630,6 +3676,7 @@ OsEID card for now.</p></div>
 </ul></div>
 </dd>
 </dl></div>
+<div style="page-break-after:always"></div>
 </div>
 <div class="sect2">
 <h3 id="_erase_binary">ERASE BINARY</h3>
@@ -3717,7 +3764,7 @@ filled up to end.</p></div>
 </ul></div>
 </dd>
 <dt class="hdlist1">
-<strong>if LC = 0</strong> 
+<strong>if Lc = 0</strong> 
 </dt>
 <dd>
 <div class="ulist"><ul>
@@ -3789,8 +3836,9 @@ filled up to end.</p></div>
 </ul></div>
 </dd>
 </dl></div>
-<div class="paragraph"><p>ISO7816-4/7.2.7 allow LC=2, and in data field end of fill arrea in file can
-be specified.  OsEID does not allow LC=2 for now.</p></div>
+<div class="paragraph"><p>ISO7816-4/7.2.7 allow Lc=2, and in data field end of fill arrea in file can
+be specified.  OsEID does not allow Lc=2 for now.</p></div>
+<div style="page-break-after:always"></div>
 </div>
 <div class="sect2">
 <h3 id="_update_binary">UPDATE BINARY</h3>
@@ -3866,7 +3914,7 @@ Le 0
 </ul></div>
 <div class="paragraph"><p>The UPDATE BINARY command updates data in selected transparent EF. Start
 of update is selectable by P1, P2 parameters. P1 represents bits 14..8, P2
-represents bit 7..0 of offset. LC represents number of updated bytes.</p></div>
+represents bit 7..0 of offset. Lc represents number of updated bytes.</p></div>
 <div class="paragraph"><p><strong>Responses</strong></p></div>
 <div class="dlist"><dl>
 <dt class="hdlist1">
@@ -3906,7 +3954,7 @@ represents bit 7..0 of offset. LC represents number of updated bytes.</p></div>
 </ul></div>
 </dd>
 <dt class="hdlist1">
-<strong>if transport of LC bytes of data fail</strong> 
+<strong>if transport of Lc bytes of data fail</strong> 
 </dt>
 <dd>
 <div class="ulist"><ul>
@@ -3978,6 +4026,7 @@ represents bit 7..0 of offset. LC represents number of updated bytes.</p></div>
 </ul></div>
 </dd>
 </dl></div>
+<div style="page-break-after:always"></div>
 </div>
 <div class="sect2">
 <h3 id="_read_binary">READ BINARY</h3>
@@ -4031,7 +4080,7 @@ P3  how many data is requested from card (Le)
 <div class="ulist"><ul>
 <li>
 <p>
-LC  empty
+Lc  empty
 </p>
 </li>
 <li>
@@ -4145,6 +4194,7 @@ over file end.</p></div>
 </ul></div>
 </dd>
 </dl></div>
+<div style="page-break-after:always"></div>
 </div>
 <div class="sect2">
 <h3 id="_get_data">GET DATA</h3>
@@ -4375,6 +4425,7 @@ Grid size (for GRID PIN, not implemented for now)
 PIN minimal length
 PUK minimal length</pre>
 </div></div>
+<div style="page-break-after:always"></div>
 </div>
 </div>
 <div class="sect2">
@@ -4433,7 +4484,7 @@ width:85%;
 <td class="tableblock halign-left valign-top" ><p class="tableblock">INS</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">P1</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">P2</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">LC</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">Lc</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">Data</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">Le</p></td>
 </tr>
@@ -4474,7 +4525,7 @@ LE empty
 </li>
 <li>
 <p>
-data lenght must correspond to LC value.
+data lenght must correspond to Lc value.
 </p>
 </li>
 <li>
@@ -4485,15 +4536,15 @@ XX XX in data field are ignored by OsEID card.
 </ul></div>
 <div class="paragraph"><p>This function can be used to erase card and return card into creation state
 (Lifecycle = 1).  All PINs are erased, filesystem is erased.  Then MF and DF
-5015 is recreated.  For LC&lt;5 MF and DF 5015 is created, default ACL are used
+5015 is recreated.  For Lc&lt;5 MF and DF 5015 is created, default ACL are used
 for this files: MF [11 3F FF], DF 5015 [11 1F FF]</p></div>
-<div class="paragraph"><p>If ACL0, ACL1, ACL2, are present in data (LC &gt;=5), MF access conditions are
+<div class="paragraph"><p>If ACL0, ACL1, ACL2, are present in data (Lc &gt;=5), MF access conditions are
 set to values specified by ACL0, ACL1, ACL2.</p></div>
-<div class="paragraph"><p>If ACL4, ACL5, ACL6, are present in data (LC &gt;=8), DF 5015 access conditions are
+<div class="paragraph"><p>If ACL4, ACL5, ACL6, are present in data (Lc &gt;=8), DF 5015 access conditions are
 set to values specified by ACL4, ACL5, ACL6.</p></div>
 <div class="paragraph"><p>If APDU provide only ACL0, ACL1, ACL2 and ACL4, ACL5, ACL6 bytes are not
-available (LC in rande 5..7), DF 5015 is not created.</p></div>
-<div class="paragraph"><p>If LC&gt; 8, unspecified data bytes will be ignored.</p></div>
+available (Lc in rande 5..7), DF 5015 is not created.</p></div>
+<div class="paragraph"><p>If Lc&gt; 8, unspecified data bytes will be ignored.</p></div>
 <div class="paragraph"><p>If card is already in creation state, no access condition is checked, card
 is erased.  If card is in activated state, access condition is checked first
 (MF recreation access condition).</p></div>
@@ -4600,7 +4651,7 @@ Part = key part identification
 </li>
 <li>
 <p>
-LC corresponding to data field length
+Lc corresponding to data field length
 </p>
 </li>
 </ul></div>
@@ -4918,9 +4969,9 @@ width:85%;
 <div class="paragraph"><p>(CASE 4S)</p></div>
 <div class="paragraph"><p>P1,P2=0, this indicate proprietary format of data field (ISO7816-8).</p></div>
 <div class="paragraph"><p>RSA key for now uses fixed public exponent 65537.  For RSA key, user can set
-LC to 0 or set LC and data field with this public exponent:</p></div>
+Lc to 0 or set Lc and data field with this public exponent:</p></div>
 <div class="paragraph"><p>All three formats are identical. First format  does not define public
-exponent, the card then uses default public exponent. If LC is not 0, data
+exponent, the card then uses default public exponent. If Lc is not 0, data
 field contain ASN1 formated data for public exponent. Only value 65537 is
 accepted.</p></div>
 <div class="paragraph"><p>Data field is ASN1 formated, 0x30 is SEQUENCE indicator, and value 0x02 or
@@ -4976,7 +5027,7 @@ P3 = 0
 </li>
 <li>
 <p>
-LC = empty
+Lc = empty
 </p>
 </li>
 <li>
@@ -5070,12 +5121,12 @@ P2 must specify PIN number
 </li>
 <li>
 <p>
-LC 0 to 255
+Lc 0 to 255
 </p>
 </li>
 <li>
 <p>
-Data - length corresponding to LC
+Data - length corresponding to Lc
 </p>
 </li>
 <li>
@@ -5084,10 +5135,10 @@ LE empty
 </p>
 </li>
 </ul></div>
-<div class="paragraph"><p>If LC is 0, this command returns how many authorization retries are left for
+<div class="paragraph"><p>If Lc is 0, this command returns how many authorization retries are left for
 PIN specified by parameter P2 in APDU.</p></div>
-<div class="paragraph"><p>If LC != 0, data in APDU are used as verification data. Normally exact 8
-bytes are present in APDU Data section and LC is set to 8.  PIN in Data
+<div class="paragraph"><p>If Lc != 0, data in APDU are used as verification data. Normally exact 8
+bytes are present in APDU Data section and Lc is set to 8.  PIN in Data
 section of APDU is padded by 0xff or 0x00.  If APDU present more data, rest
 of data is ignored.  If APDU presents data below 8 bytes, data are internally
 padded with 0xff.</p></div>
@@ -5120,7 +5171,7 @@ Responses
 </ul></div>
 </dd>
 <dt class="hdlist1">
-<strong>if LC = 0</strong> 
+<strong>if Lc = 0</strong> 
 </dt>
 <dd>
 <div class="ulist"><ul>
@@ -5142,7 +5193,7 @@ Responses
 </ul></div>
 </dd>
 <dt class="hdlist1">
-<strong>if LC != 0</strong> 
+<strong>if Lc != 0</strong> 
 </dt>
 <dd>
 <div class="ulist"><ul>
@@ -5175,7 +5226,7 @@ Responses
 <img src="./images/icons/note.png" alt="Note">
 </td>
 <td class="content">MyEID - from reference manual Ver 1.7.7,  APDU need exact 0 or 8 bytes
-in data (LC = 0 or 8).
+in data (Lc = 0 or 8).
 NOTE: response codes are organized in same order as tests in code</td>
 </tr></table>
 </div>
@@ -5221,7 +5272,7 @@ width:85%;
 <div class="ulist"><ul>
 <li>
 <p>
-P1, P2, LC, Data, - arbitrary data are accepted
+P1, P2, Lc, Data, - arbitrary data are accepted
 </p>
 </li>
 </ul></div>
@@ -5392,7 +5443,7 @@ width:85%;
 </tr>
 </tbody>
 </table>
-<div class="paragraph"><p>If P2 != 0 there is LC != 0, LE = 0 and corresponding template must be
+<div class="paragraph"><p>If P2 != 0 there is Lc != 0, LE = 0 and corresponding template must be
 filled in data field.</p></div>
 <div class="paragraph"><p>Data field represents concatenated Tag Len Value objects.</p></div>
 <div class="literalblock">
@@ -5496,7 +5547,7 @@ width:85%;
 <th class="tableblock halign-left valign-top" > INS  </th>
 <th class="tableblock halign-left valign-top" > P1 </th>
 <th class="tableblock halign-left valign-top" > P2  </th>
-<th class="tableblock halign-left valign-top" > LC  </th>
+<th class="tableblock halign-left valign-top" > Lc  </th>
 <th class="tableblock halign-left valign-top" > Data </th>
 <th class="tableblock halign-left valign-top" > LE</th>
 </tr>
@@ -5543,7 +5594,7 @@ P2 = 9Ah data to be signed in data field (plain data)
 </li>
 <li>
 <p>
-LC = length of data
+Lc = length of data
 </p>
 </li>
 </ul></div>
@@ -5573,7 +5624,7 @@ P2 = BCh BER-TLV to be signed in data field
 </li>
 <li>
 <p>
-LC = 0 data already present in card
+Lc = 0 data already present in card
 </p>
 <div class="olist arabic"><ol class="arabic">
 <li>
@@ -5605,7 +5656,7 @@ P2 = 00h - data field absent, use data from file (wrap)
 </li>
 <li>
 <p>
-LC = length of plaintext
+Lc = length of plaintext
 </p>
 </li>
 </ul></div>
@@ -5657,7 +5708,7 @@ P2 = 86h - data field contain padding indicator, then partial or full ciphertext
 </li>
 <li>
 <p>
-LC = length of ciphertext/ciphertext part + length of padding indicator if used
+Lc = length of ciphertext/ciphertext part + length of padding indicator if used
 </p>
 </li>
 </ul></div>
@@ -5807,7 +5858,7 @@ indicators for 2048 bit keys.</p></div>
 <div class="paragraph"><p>WARNING!  OsEID support for DES and AES security operation is experimental.
 If selected key file contain AES/DES key, security operation is allowed only
 for CLA = 0x80.  Digital signature security operation is not supported if
-AES/DES key is selected. Data size (LC) must match block size of DES /AES
+AES/DES key is selected. Data size (Lc) must match block size of DES /AES
 block.</p></div>
 <div class="paragraph"><p>OsEID does not support templates for now, but for completeness:</p></div>
 <div class="paragraph"><p>Templates:
@@ -5847,7 +5898,7 @@ width:85%;
 <th class="tableblock halign-left valign-top" > INS  </th>
 <th class="tableblock halign-left valign-top" > P1 </th>
 <th class="tableblock halign-left valign-top" > P2  </th>
-<th class="tableblock halign-left valign-top" > LC  </th>
+<th class="tableblock halign-left valign-top" > Lc  </th>
 <th class="tableblock halign-left valign-top" > Data </th>
 <th class="tableblock halign-left valign-top" > LE</th>
 </tr>
@@ -5867,8 +5918,8 @@ width:85%;
 <div class="paragraph"><p>(CASE 4S)</p></div>
 <div class="paragraph"><p>This command is used to provide ECDH operation. Before calling this command,
 correct security environment must be set and key file must be selected.</p></div>
-<div class="paragraph"><p>LC   - correspond to length of data field
-Data - peer public key in format:  0x7c, LC-2 0x85 LC-4 0x04 point_data
+<div class="paragraph"><p>Lc   - correspond to length of data field
+Data - peer public key in format:  0x7c, Lc-2 0x85 Lc-4 0x04 point_data
 Here: 0x7c is Dynamic Authentication Template tag
       0x85 public key in data field
       0x04 uncompressed key indicator</p></div>
@@ -5985,7 +6036,7 @@ returned.</p></div>
 </li>
 <li>
 <p>
-00 20 00 P2 LC [data] (P2 in range 1 to 0x0e)
+00 20 00 P2 Lc [data] (P2 in range 1 to 0x0e)
 </p>
 </li>
 </ul></div>
@@ -6002,22 +6053,22 @@ returned.</p></div>
 </li>
 <li>
 <p>
-00 22 41 B6 LC [data] perform digital signature
+00 22 41 B6 Lc [data] perform digital signature
 </p>
 </li>
 <li>
 <p>
-00 22 41 B8 LC [data] perform decipher
+00 22 41 B8 Lc [data] perform decipher
 </p>
 </li>
 <li>
 <p>
-00 22 81 B8 LC [data] perform encipher
+00 22 81 B8 Lc [data] perform encipher
 </p>
 </li>
 <li>
 <p>
-00 22 41 A4 LC [data] perform ECDH operation
+00 22 41 A4 Lc [data] perform ECDH operation
 </p>
 </li>
 </ul></div>
@@ -6039,7 +6090,7 @@ returned.</p></div>
 </dt>
 <dd>
 <p>
--00 2A 9E 9A LC [data]
+-00 2A 9E 9A Lc [data]
 </p>
 </dd>
 <dt class="hdlist1">
@@ -6078,7 +6129,7 @@ returned.</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
-00 44 P1 P2 LC [data](P1,P2,LC, does not matter to values)
+00 44 P1 P2 Lc [data](P1,P2,Lc, does not matter to values)
 </p>
 </li>
 </ul></div>
@@ -6090,7 +6141,7 @@ returned.</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
-00 46 00 00 LC
+00 46 00 00 Lc
 </p>
 </li>
 </ul></div>
@@ -6114,7 +6165,7 @@ returned.</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
-00 86 00 00 LC [data]
+00 86 00 00 Lc [data]
 </p>
 </li>
 </ul></div>
@@ -6126,7 +6177,7 @@ returned.</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
-00 A4 P1 P2 LC [data]
+00 A4 P1 P2 Lc [data]
 </p>
 </li>
 </ul></div>
@@ -6264,7 +6315,7 @@ returned.</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
-00 D6 P1 P2 LC [data] (P1 0-0x7f, P2 0-0xff, LC 1..0xff)
+00 D6 P1 P2 Lc [data] (P1 0-0x7f, P2 0-0xff, Lc 1..0xff)
 </p>
 </li>
 </ul></div>
@@ -6276,7 +6327,7 @@ returned.</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
-00 DA 01 P2 LC [data] (P2 in range 1..14)
+00 DA 01 P2 Lc [data] (P2 in range 1..14)
 </p>
 </li>
 </ul></div>
@@ -6296,67 +6347,67 @@ nothing (return code 0x9000)
 <div class="ulist"><ul>
 <li>
 <p>
-00 DA 01 80 LC [data] private modulus
+00 DA 01 80 Lc [data] private modulus
 </p>
 </li>
 <li>
 <p>
-00 DA 01 81 LC [data] public exponent
+00 DA 01 81 Lc [data] public exponent
 </p>
 </li>
 <li>
 <p>
-00 DA 01 82 LC [data] private exponent (not CRT)
+00 DA 01 82 Lc [data] private exponent (not CRT)
 </p>
 </li>
 <li>
 <p>
-00 DA 01 83 LC [data] prime P
+00 DA 01 83 Lc [data] prime P
 </p>
 </li>
 <li>
 <p>
-00 DA 01 84 LC [data] prime Q
+00 DA 01 84 Lc [data] prime Q
 </p>
 </li>
 <li>
 <p>
-00 DA 01 85 LC [data] d<sup>-1</sup> mod (p-1)
+00 DA 01 85 Lc [data] d<sup>-1</sup> mod (p-1)
 </p>
 </li>
 <li>
 <p>
-00 DA 01 86 LC [data] d<sup>-1</sup> mod (q-1) /EC publickey
+00 DA 01 86 Lc [data] d<sup>-1</sup> mod (q-1) /EC publickey
 </p>
 </li>
 <li>
 <p>
-00 DA 01 87 LC [data] q<sup>-1</sup> mod p /EC private key
+00 DA 01 87 Lc [data] q<sup>-1</sup> mod p /EC private key
 </p>
 </li>
 <li>
 <p>
-00 DA 01 88 LC [data] modulus (1st part for 2048 key)
+00 DA 01 88 Lc [data] modulus (1st part for 2048 key)
 </p>
 </li>
 <li>
 <p>
-00 DA 01 89 LC [data] modulus (2nd part for 2048 key)
+00 DA 01 89 Lc [data] modulus (2nd part for 2048 key)
 </p>
 </li>
 <li>
 <p>
-00 DA 01 8A LC [data] private exponent 1st part for 2048 key (not CRT)
+00 DA 01 8A Lc [data] private exponent 1st part for 2048 key (not CRT)
 </p>
 </li>
 <li>
 <p>
-00 DA 01 8B LC [data] private exponent 2nd part for 2048 key (not CRT)
+00 DA 01 8B Lc [data] private exponent 2nd part for 2048 key (not CRT)
 </p>
 </li>
 <li>
 <p>
-00 DA 01 A0 LC [data] symmetric key (DES/3DES/AES128/AES192/AES256)
+00 DA 01 A0 Lc [data] symmetric key (DES/3DES/AES128/AES192/AES256)
 </p>
 </li>
 </ul></div>
@@ -6368,7 +6419,7 @@ nothing (return code 0x9000)
 <div class="ulist"><ul>
 <li>
 <p>
-00 DA 01 E0 LC [data]
+00 DA 01 E0 Lc [data]
 </p>
 </li>
 </ul></div>
@@ -6380,7 +6431,7 @@ nothing (return code 0x9000)
 <div class="ulist"><ul>
 <li>
 <p>
-00 E0 00 00 LC [data] (LC in range 25 to 49 bytes)
+00 E0 00 00 Lc [data] (Lc in range 25 to 49 bytes)
 </p>
 </li>
 </ul></div>
@@ -6426,7 +6477,7 @@ Proprietary, change file type of EC key from 0x22 to 0x23
 <div class="ulist"><ul>
 <li>
 <p>
-80 DA 00 00 00
+80 DA 00 00 Lc [data]
 </p>
 </li>
 </ul></div>
@@ -6674,6 +6725,7 @@ multiplication.</p></div>
 style="
 width:80%;
 ">
+<caption class="title">Table 5. Multiplication speed</caption>
 <col style="width:12%;">
 <col style="width:12%;">
 <col style="width:12%;">
@@ -6715,16 +6767,21 @@ width:80%;
 <strong>targets/simulavr/Readme</strong> from OsEID tarball.</td>
 </tr></table>
 </div>
-<div class="paragraph"><p>Truncated multiplication speed</p></div>
+<div class="sect3">
+<h4 id="_truncated_multiplication_speed">Truncated multiplication speed</h4>
+<div class="paragraph"><p>Result of this multiplication is in same length as operand length. Only low
+bits from result are available at end of this operation.</p></div>
 <table class="tableblock frame-all grid-all"
 style="
 width:80%;
 ">
-<col style="width:20%;">
-<col style="width:20%;">
-<col style="width:20%;">
-<col style="width:20%;">
-<col style="width:20%;">
+<caption class="title">Table 6. Trucnated multiplication speed</caption>
+<col style="width:16%;">
+<col style="width:16%;">
+<col style="width:16%;">
+<col style="width:16%;">
+<col style="width:16%;">
+<col style="width:16%;">
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">operands size</p></td>
@@ -6732,16 +6789,20 @@ width:80%;
 <td class="tableblock halign-left valign-top" ><p class="tableblock">192</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">256</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">384</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">512</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">clock cycles</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock"></p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock"></p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock"></p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock"></p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">---</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">1625</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">2904</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">6558</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">10876</p></td>
 </tr>
 </tbody>
 </table>
+<div style="page-break-after:always"></div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_squaring">Squaring</h3>
@@ -6752,6 +6813,7 @@ code is interrupt safe too.</p></div>
 style="
 width:80%;
 ">
+<caption class="title">Table 7. Squaring speed</caption>
 <col style="width:12%;">
 <col style="width:12%;">
 <col style="width:12%;">
@@ -6920,7 +6982,7 @@ multiplication and some addition (using the AND instruction for one more bit
 in operand), it will introduce more overhead as in explained algorithm.
 Then there is <em>1+n</em> and <em>n</em> operand size in final part of folding, this
 introduce second overhead.  It can be guessed, that currently implemented
-algorithm is faster (on 8 bit AVR platform)</p></div>
+algorithm is faster (on 8 bit AVR platform).</p></div>
 </div>
 </div>
 <div class="sect2">
@@ -6938,7 +7000,7 @@ on this device.</p></div>
 style="
 width:80%;
 ">
-<caption class="title">Table 2. ECDSA operation timing, blinded, in millions of clock cycles</caption>
+<caption class="title">Table 8. ECDSA operation timing, blinded, in millions of clock cycles</caption>
 <col style="width:20%;">
 <col style="width:20%;">
 <col style="width:20%;">
@@ -7009,7 +7071,7 @@ makes no sense to optimize 512/768 bit calculation for window size 5 bits.</p></
 style="
 width:80%;
 ">
-<caption class="title">Table 3. RSA private operation timing (in millions of clock cycles)</caption>
+<caption class="title">Table 9. RSA private operation timing (in millions of clock cycles)</caption>
 <col style="width:16%;">
 <col style="width:16%;">
 <col style="width:16%;">
@@ -7036,24 +7098,24 @@ width:80%;
 <tr>
 <td class="tableblock halign-left valign-top" rowspan="3" ><p class="tableblock">512</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">2</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">20,58</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">20,80</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">22,45</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">23,38</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">16,17</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">16,81</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">18,22</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">19.01</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">4</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">17,60</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">17,82</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">19,14</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">16,35.</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">14,29</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">14,43</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">15,57</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">16,35</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">5</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">14,61.</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">18,23</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">19,52</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">16,66.</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">14,61</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">14,75</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">15,87</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">16,66</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="6" ><p class="tableblock"></p></td>
@@ -7061,24 +7123,24 @@ width:80%;
 <tr>
 <td class="tableblock halign-left valign-top" rowspan="3" ><p class="tableblock">768</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">2</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">30,43</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">30,65</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">32,30</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">33,23</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">27,47</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">27,67</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">29,17</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">30,01</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">4</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">25,67</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">25,89</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">27,21</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">25,32.</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">23,08</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">23,38</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">24,48</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">25,32</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">5</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">22,97.</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">25,76</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">27,34</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">25,44.</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">22,97</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">23,26</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">24,61</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">25,44</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="6" ><p class="tableblock"></p></td>
@@ -7086,24 +7148,24 @@ width:80%;
 <tr>
 <td class="tableblock halign-left valign-top" rowspan="3" ><p class="tableblock">1024</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">2</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">63,36</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">63,73</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">66,30</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">67,75</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">57,16</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">57,66</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">59.83</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">61,14</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">4</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">53,14</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">53,51</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">55,56</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">51,32.</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">47,81</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">48,32</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">50,01</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">51,32</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">5</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">47,29.</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">52,93</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">54,93</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">50,75.</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">47,29</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">47,79</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">49,45</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">50,75</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="6" ><p class="tableblock"></p></td>
@@ -7111,24 +7173,24 @@ width:80%;
 <tr>
 <td class="tableblock halign-left valign-top" rowspan="3" ><p class="tableblock">1536</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">2</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">199,4</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">200,2</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">205,6</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">208,7</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">178,4</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">179,5</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">184,0</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">186,7</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">4</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">165,8</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">166,6</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">170,9</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">155,1.</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">147,8</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">148,9</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">152,4</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">155,1</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">5</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">144,4.</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">162,8</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">167,0</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">151,6.</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">144,4</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">145,5</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">148,9</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">151,6</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="6" ><p class="tableblock"></p></td>
@@ -7136,33 +7198,27 @@ width:80%;
 <tr>
 <td class="tableblock halign-left valign-top" rowspan="3" ><p class="tableblock">2048</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">2</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">410,9</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">412,3</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">420,5</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">425,3</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">365,7</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">367,6</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">374,3</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">378,5</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">4</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">340,9</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">342,3</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">348,8</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">313,9.</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">302,7</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">304,6</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">309,7</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">313,9</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">5</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">293,8.</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">332,5</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">340,4</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">306,4.</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">293,8</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">295,7</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">302,1</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">306,4</p></td>
 </tr>
 </tbody>
 </table>
-<div class="paragraph"><p>New  speeds 4 bits window, blinding, belcore prot.
- 16347718
- 25310092
- 51311640
-155087960
-313883155</p></div>
 <div class="paragraph"><p>To reach this, lot of  assembler routines are used, especially Montgomery
 algo and function like mul256 mod 2<sup>256</sup> (truncated multiplication).  To get
 best possible performance, the 384, 512, 768 and 1024 bit squaring and
@@ -7170,7 +7226,8 @@ multiplication are unrolled as possible, with respect to flash memory size
 in AVR.</p></div>
 <div class="paragraph"><p>Code size: about 20 000 lines in AVR assembler, about 10000 lines in C. AVR
 flash in ATmega128 is occupied by ~ 63kB code, 64Kb is used as data space for
-card filesystem.</p></div>
+card filesystem. RAM is almost full, there is approximately 80 bytes free in
+atmnega128 (4kB RAM space).</p></div>
 <div style="page-break-after:always"></div>
 </div>
 </div>
@@ -7299,12 +7356,12 @@ value is one operand in GCD, second operand is tested number).</p></div>
 <div class="paragraph"><p>Number is considered to be a prime number if pass the Rabin-Miller test.
 Rabin-Miller test consider number to be a prime after several loops with
 different parameter <em>A</em>.  Number of loops is based on length of a tested
-prime.  (Listed in row  "RM loop pass").</p></div>
+prime.  (Listed in row  "MR loop pass").</p></div>
 <table class="tableblock frame-all grid-all"
 style="
 width:100%;
 ">
-<caption class="title">Table 4. RSA key generation statistics (for 10 000 keys)</caption>
+<caption class="title">Table 10. RSA key generation statistics (for 10 000 keys)</caption>
 <col style="width:16%;">
 <col style="width:16%;">
 <col style="width:16%;">
@@ -7369,7 +7426,7 @@ width:100%;
 <td class="tableblock halign-left valign-top" ><p class="tableblock">59.18</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">RM loop pass</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">MR loop pass</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">12</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">8</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">6</p></td>
@@ -7391,7 +7448,7 @@ together).</p></div>
 style="
 width:100%;
 ">
-<caption class="title">Table 5. average GCD speed (in millions of clock cycles)</caption>
+<caption class="title">Table 11. average GCD speed (in millions of clock cycles)</caption>
 <col style="width:25%;">
 <col style="width:25%;">
 <col style="width:25%;">
@@ -7430,9 +7487,9 @@ width:100%;
 </tbody>
 </table>
 <div class="paragraph"><p>For one prime (512 bit) we need in average 147 GCD operations, total time
-147*0.148 = about 22 seconds.  Then 29 Miller-Rabin test (one about 1.8 sec)
-= about 52 seconds.  For one prime we need in average 74 seconds.</p></div>
-<div class="paragraph"><p>Generation of 1024 bit key (4 primes ) then take in average about 5 minutes,
+147*0.148 = about 22 seconds.  Then 29+6 Miller-Rabin test (one about 1.9 sec)
+= about 66.5 seconds.  For one prime we need in average 89 seconds.</p></div>
+<div class="paragraph"><p>Generation of 1024 bit key (4 primes ) then take in average about 6 minutes,
 but in worst case over 30 minutes.</p></div>
 <div class="paragraph"><p>When generating a 2048 bit key you have to be very patient.  Count with time
 1 to 3 hours.  (One Miller-Rabin test run in about 11 second - there is
@@ -7443,6 +7500,10 @@ calculation (3x modular multiplicative inverse) is not blinded too.  SPA,
 DPA or IPA can be used to extract some informations about generated key.
 Therefore it is recommended to generate key only in secure environment, if
 key security is important.</p></div>
+<div class="paragraph"><p>OsEID project does not use strong primes for P and Q.  Strong primes can
+protect us from faktorization of modulus using Pollard&#8217;s algorithm, but
+strong primes do not protect us against new methods of modulus factorization
+for example Lenstra elliptic curve factorization or Number Field Sieve.</p></div>
 <div class="paragraph"><p><em>RSA key generation is not resistant to side channels attack</em></p></div>
 <div class="paragraph"><p>Please read more about <a href="#RSA_attack_resistance">[RSA_attack_resistance]</a>, OsEID is hobby card, you
 can not expect perfect resistance to all attacks.</p></div>
@@ -7589,7 +7650,8 @@ been warned.</em></p></div>
 </li>
 <li>
 <p>
-<a id="NIST_ECC"></a>[NIST_ECC] <a href="https://apps.nsa.gov/iaarchive/library/ia-guidance/ia-solutions-for-classified/algorithm-guidance/mathematical-routines-for-the-nist-prime-elliptic-curves.cfm">https://apps.nsa.gov/iaarchive/library/ia-guidance/ia-solutions-for-classified/algorithm-guidance/mathematical-routines-for-the-nist-prime-elliptic-curves.cfm</a>
+<a id="NIST_ECC"></a>[NIST_ECC] <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.204.9073&amp;rep=rep1&amp;type=pdf">http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.204.9073&amp;rep=rep1&amp;type=pdf</a>
+  (<a href="https://apps.nsa.gov/iaarchive/library/ia-guidance/ia-solutions-for-classified/algorithm-guidance/mathematical-routines-for-the-nist-prime-elliptic-curves.cfm">https://apps.nsa.gov/iaarchive/library/ia-guidance/ia-solutions-for-classified/algorithm-guidance/mathematical-routines-for-the-nist-prime-elliptic-curves.cfm</a>)
 </p>
 </li>
 <li>
@@ -7825,6 +7887,11 @@ been warned.</em></p></div>
 <div class="sect1">
 <h2 id="appendixH">Appendix H: Opensc patches</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_opensc_0_20">Opensc 0.20</h3>
+<div class="paragraph"><p>Card is automaticaly detected. No patch is needed. If you need support for
+secp256k1, please read about experimental support for secp256k1 below.</p></div>
+</div>
 <div class="sect2">
 <h3 id="_opensc_0_17_018_and_0_19">Opensc 0.17, 018 and 0.19</h3>
 <div class="paragraph"><p>Opensc 0.17, 0.18 and 0.19 can detect all features of OsEID except of
@@ -8486,6 +8553,60 @@ plaintext = m2 + h * q
 # *****************************************************************
 .</pre>
 </div></div>
+<div class="paragraph"><p>Fermat primality test and Miller-Rebin test</p></div>
+<div class="literalblock">
+<div class="content monospaced">
+<pre># use internal test to determine if number is prime
+# prime
+IsPrime(41051)
+# no prime
+IsPrime(41053)
+# prime
+IsPrime(41057)
+#
+# Carmichael number (no prime, but fails in Fermat test)
+IsPrime(41041)
+#
+# Fermat tests of abowe numbers (result is always 1)
+# you can use differenst bases, here 2 is used as base
+2^41050 mod 41051
+2^41052 mod 41053
+2^41056 mod 41057
+2^41040 mod 41041
+#
+# Miller-Rabin test (base 10, one loop)
+#
+# initialization:
+N=41057
+E=N-1
+D=1
+#
+# calculate squaring loops
+do D=D+1;E=trunc(E/2) while IsOdd(E)!=true
+#
+# do exponentation (here base 10 is used)
+EE = 10^E mod N
+if ((EE == 1 or EE == N-1)) then (
+        print ("prime candidate")
+) else (
+        print("squaring");
+        while D&gt;0 do (
+                D=D-1;
+                EE=EE^2 mod N;
+                print(EE);
+                if(EE==N-1) then (
+                        print("prime candidate");
+                        break;
+                        );
+                if(EE==1) then (
+                        print ("no prime");
+                        break;
+                        );
+        );
+        if(D==0) then print("no prime")
+)
+# you can repeat this with N=41051,41053,41041 and observe intermediate results</pre>
+</div></div>
 </div>
 </div>
 <div class="sect1">
@@ -8520,7 +8641,7 @@ plaintext = m2 + h * q
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2019-09-06 12:30:30 CEST
+ 2019-09-30 09:59:44 CEST
 </div>
 </div>
 </body>
