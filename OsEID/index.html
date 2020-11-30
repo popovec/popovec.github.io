@@ -769,7 +769,7 @@ asciidoc.install(2);
 <h1>OsEID smart card &amp; OsEID token</h1>
 <span id="author">Peter Popovec</span><br>
 <span id="email" class="monospaced">&lt;<a href="mailto:popovec.peter@gmail.com">popovec.peter@gmail.com</a>&gt;</span><br>
-<span id="revdate">Mon Sep 30 09:59:53 CEST 2019</span>
+<span id="revdate">Mon Nov 30 13:53:42 CET 2020</span>
 <div id="toc">
   <div id="toctitle">Table of Contents</div>
   <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
@@ -778,17 +778,20 @@ asciidoc.install(2);
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="paragraph"><p>Copyright &#169; 2015-2019 Peter Popovec &lt;<a href="mailto:popovec.peter@gmail.com">popovec.peter@gmail.com</a>&gt;</p></div>
+<div class="paragraph"><p>Copyright &#169; 2015-2020 Peter Popovec &lt;<a href="mailto:popovec.peter@gmail.com">popovec.peter@gmail.com</a>&gt;</p></div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_introduction">Introduction</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>OsEID is amateur/hobby smart card with <a href="#RSA">[RSA]</a> and <a href="#EC">[EC]</a> cryptography support. It
-is designed on low cost and easily accessible microcontroller Microchip/Atmel ATmega
-128 or ATmega 128A. Alternative hardware uses atmega 1284 microcontroller.</p></div>
+<div class="paragraph"><p>OsEID is amateur/hobby smart card with <a href="#RSA">[RSA]</a> and <a href="#EC">[EC]</a> cryptography
+support.  It is designed on low cost and easily accessible microcontroller
+Microchip AVR128DA32 or ATMEGA128.</p></div>
 <div class="paragraph"><p><span class="image">
-<img src="images/card_3x.png" alt="OsEID">
+<img src="images/OsEID_AVR128DA_1_200.png" alt="OsEID_AVR128DA">
+</span>
+<span class="image">
+<img src="images/card_3x_200.png" alt="OsEID_ATMEGA">
 </span></p></div>
 <div class="paragraph"><p>OsEID token is amateur/hobby USB token based on Microchip/Atmel xmega128a4u
 microcontroller.  This projects implements USB reader (<a href="#CCID">[CCID]</a> class) with
@@ -824,13 +827,18 @@ OsEID token - single sided PCB, only 15 components
 </li>
 <li>
 <p>
-Based on easily accessible microcontroller Microchip/Atmel ATmega 128A / xmega128A4U
+Based on easily accessible microcontroller Microchip AVR128DA / xmega128A4U
 </p>
 </li>
 <li>
 <p>
 ISO 7816 compatible
   note:[Not all ISO specifications are respected, for example, card thickness cannot be accomplished.]
+</p>
+</li>
+<li>
+<p>
+support for A,B and C class (ISO7816-3, operating voltage 1.8, 3.3 and 5V)
 </p>
 </li>
 <li>
@@ -929,7 +937,7 @@ Supported in Linux/Windows by OpenSC package - MyEID driver
 </li>
 <li>
 <p>
-OsEID card: Communication speed 161290 bits/s for 5MHz readers
+OsEID card: Communication speed 312500 bits/s for 5MHz readers
 </p>
 </li>
 <li>
@@ -964,59 +972,59 @@ card - only T0 protocol, T1 available only in token/simulator
 </li>
 <li>
 <p>
-RSA operations slow (depends on ATmega RC oscillator, usually max about 13.5MHz)
+RSA operations for keys &gt; 1024 is slow
 </p>
 <div class="ulist"><ul>
 <li>
 <p>
-about 23.3 seconds for 2048 bit key / token about 10 seconds,
+about 10.7 seconds for 2048 bit key / token about 10 seconds,
 </p>
 </li>
 <li>
 <p>
-about 11.5 seconds for 1536 bit key / token about 5 seconds,
+about  5.3 seconds for 1536 bit key / token about 4.9 seconds,
 </p>
 </li>
 <li>
 <p>
-about 3.8  seconds for 1024 bit key / token about 1.7 seconds,
-</p>
-</li>
-<li>
-<p>
-about 1.9  seconds for 768 and 512 bit keys / token about 0.8 second
+about  1.8 seconds for 1024 bit key / token about 1.7 seconds,
 </p>
 </li>
 </ul></div>
 </li>
 <li>
 <p>
-EC operations slow, ECDSA operation timing:
+RSA key generation is really slow
+</p>
+</li>
+<li>
+<p>
+EC operations for keys &gt; 256 is slow, ECDSA operation timing:
 </p>
 <div class="ulist"><ul>
 <li>
 <p>
-secp521r1  11 seconds  / token about 5 seconds
+secp521r1  about 4.8 seconds / token about 4.4 seconds
 </p>
 </li>
 <li>
 <p>
-secp384r1  5.9 seconds / token about 2.5 seconds
+secp384r1  about 2.6 seconds / token about 2.3 seconds
 </p>
 </li>
 <li>
 <p>
-prime256v1 2.7 seconds / token about 1.4 seconds
+prime256v1 about 1.2 seconds / token about 1.1 seconds
 </p>
 </li>
 <li>
 <p>
-prime192v1 1.1 second / token about 0.5 seconds
+prime192v1 below 0.6  second / token below 0.5 second
 </p>
 </li>
 <li>
 <p>
-secp256k1  3.6 seconds / token about 2 seconds
+secp256k1  about 2.1 seconds / token about 2 seconds
 </p>
 </li>
 </ul></div>
@@ -1043,7 +1051,7 @@ project <a href="#OpenSC">[OpenSC]</a> can be used as driver for OsEID card.</p>
 <div class="ulist"><ul>
 <li>
 <p>
-no SIM version of card
+no mini SIM version of card
 </p>
 </li>
 <li>
@@ -1104,17 +1112,12 @@ no 224 bit NIST curve
 <li>
 <p>
 no support for automatic delete of session objects
-  (please read MyEID 2.3.0 referene manual)
+  (please read MyEID 2.3.0 reference manual)
 </p>
 </li>
 <li>
 <p>
 slow RSA
-</p>
-</li>
-<li>
-<p>
-slow ECC
 </p>
 </li>
 <li>
@@ -1134,13 +1137,13 @@ all functions.</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
-slow RSA
+slow RSA for keys with modulus length over 1024 bits
 </p>
 </li>
 </ul></div>
 <div class="paragraph"><p>For a comparison, here is table showing the execution time of RSA decrypt
-operation (time in seconds) for MyEID (3.3.3), OsEID (with exponent blinding
-turned on):</p></div>
+operation (time in seconds) for MyEID cards, and OsEID card/token (with
+exponent blinding turned on):</p></div>
 <div class="literalblock">
 <div class="content monospaced">
 <pre>pkcs11-tool --decrypt --slot 1 -m RSA-PKCS ..</pre>
@@ -1149,7 +1152,7 @@ turned on):</p></div>
 style="
 width:80%;
 ">
-<caption class="title">Table 1. OsEID/MyEID RSA speed comparation</caption>
+<caption class="title">Table 1. OsEID/MyEID RSA speed comparison</caption>
 <col style="width:37%;">
 <col style="width:12%;">
 <col style="width:12%;">
@@ -1168,7 +1171,39 @@ width:80%;
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">MyEID (3.3.3)</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">OsEID card  (5 keys)</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">2.7</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">3.0</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">3.9</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">7.4</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">12.7</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">OsEID token (5 keys)</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">1.2</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">1.4</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">2.3</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">5.5</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">10.6</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">MyEID (3.3.3) (1 key)</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">2.7</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">-</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">MyEID (4.0.1) (2 keys)</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">3.8</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">-</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">MyEID (3.3.3) (5 keys)</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">3.4</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">3.4</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">3.4</p></td>
@@ -1176,32 +1211,24 @@ width:80%;
 <td class="tableblock halign-left valign-top" ><p class="tableblock">3.8</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">OsEID card (blinding on)</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">3.0</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">3.6</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">5.4</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">12.7</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">23.8</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">OsEID token (blinding on)</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">1.2</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">1.4</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">2.3</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">5.5</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">10.6</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">MyEID (4.0.1) (12 keys)</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">4.2</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">4.2</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">4.3</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">4.4</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">4.7</p></td>
 </tr>
 </tbody>
 </table>
 <div class="paragraph"><p>Times in this table are higher then times given in Features section, because
-here the time of all operations that OpenSC runs on card, e.g.  card
-identification, reading PKCS#15 files, reading public key.</p></div>
-<div class="paragraph"><p>MyEID card seems to be slower in filesystem operations, listing all card
-objects by <strong>pkcs15-tool -D</strong> command run in 2.8 second for 5 RSA keys on card.
-OsEID runs the same command, the same set of keys in 1.9 second.</p></div>
-<div class="paragraph"><p>Time depends on card reader too.  Both cards allow the same communication speed -
-161290 bits/s for 5MHz readers, for tests 3.7MHz reader was used (about
-120kbit/s).</p></div>
+here the time is summary of all operations that OpenSC runs on card, e.g.
+card identification, reading PKCS#15 files, reading public key.</p></div>
+<div class="paragraph"><p>MyEID (3.3.3) card seems to be slower in filesystem operations, listing all
+card objects by <strong>pkcs15-tool -D</strong> command run in 2.8 second for 5 RSA keys on
+card.  OsEID card runs the same command, the same set of keys in 1.9 second.
+If only one key is installed in MyEID card, <strong>pkcs15-tool -D</strong> command need
+2.5 seconds, but OsEID card/token need only 0.7/0.6 sec.</p></div>
+<div class="paragraph"><p>Time depends on card reader, USB utilization etc.</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -1209,21 +1236,28 @@ ECC speed is comparable to MyEID
 </p>
 </li>
 </ul></div>
+<div class="paragraph"><p>MyEID with two keys installed, OsEID with four keys installed.  Both cards
+allow the same communication speed - 312500 bits/s for 5MHz readers, for
+tests 4.8 MHz reader was used (opensc 0.21.0)</p></div>
 <table class="tableblock frame-all grid-all"
 style="
 width:80%;
 ">
-<caption class="title">Table 2. OsEID/MyEID ECC speed comparation</caption>
-<col style="width:42%;">
-<col style="width:14%;">
-<col style="width:14%;">
-<col style="width:14%;">
-<col style="width:14%;">
+<caption class="title">Table 2. OsEID/MyEID ECC speed comparison (sign operation)</caption>
+<col style="width:33%;">
+<col style="width:11%;">
+<col style="width:11%;">
+<col style="width:11%;">
+<col style="width:11%;">
+<col style="width:11%;">
+<col style="width:11%;">
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top" >  key size               </th>
+<th class="tableblock halign-left valign-top" >  key size           </th>
 <th class="tableblock halign-left valign-top" > 192   </th>
 <th class="tableblock halign-left valign-top" > 256    </th>
+<th class="tableblock halign-left valign-top" > 192   </th>
+<th class="tableblock halign-left valign-top" > 256   </th>
 <th class="tableblock halign-left valign-top" > 192   </th>
 <th class="tableblock halign-left valign-top" > 256</th>
 </tr>
@@ -1233,31 +1267,102 @@ width:80%;
 <td class="tableblock halign-left valign-top" ><p class="tableblock"></p></td>
 <td class="tableblock halign-left valign-top" colspan="2" ><p class="tableblock">pkcs15-crypt</p></td>
 <td class="tableblock halign-left valign-top" colspan="2" ><p class="tableblock">pkcs11-tool</p></td>
+<td class="tableblock halign-left valign-top" colspan="2" ><p class="tableblock">raw</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">MyEID (4.0.1)</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">1.4</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">1.4</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">4.7</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">4.7</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">1.2</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">1.6</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">1.3</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">3.3</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">0.16</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">0.26</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">OsEID card</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">1.6</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">3.3</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">3.2</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">4.7</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">1.4</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">2.2</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">2.3</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">3.0</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">0.55</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">1.2</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">OsEID token</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">0.7</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">1.4</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">1.3</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">2.0</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">1.1</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">1.7</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">0.46</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">1.1</p></td>
 </tr>
 </tbody>
 </table>
-<div class="paragraph"><p>(there is no support for secp384r1 and secp521r1 in MyEID 4.0.1 card)</p></div>
+<div class="paragraph"><p>As You can see, raw time is significant better for MyEID card, but whole ECC
+operation time is comparable for MyEID and OsEID card.</p></div>
+<div class="paragraph"><p>There is no support for secp384r1 and secp521r1 in MyEID 4.0.1 card.
+OsEID card/token results:</p></div>
+<table class="tableblock frame-all grid-all"
+style="
+width:80%;
+">
+<caption class="title">Table 3. OsEID ECC speed (sign operation)</caption>
+<col style="width:40%;">
+<col style="width:10%;">
+<col style="width:10%;">
+<col style="width:10%;">
+<col style="width:10%;">
+<col style="width:10%;">
+<col style="width:10%;">
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" >  key size     </th>
+<th class="tableblock halign-left valign-top" > 384   </th>
+<th class="tableblock halign-left valign-top" > 521    </th>
+<th class="tableblock halign-left valign-top" > 384   </th>
+<th class="tableblock halign-left valign-top" > 521   </th>
+<th class="tableblock halign-left valign-top" > 384   </th>
+<th class="tableblock halign-left valign-top" > 521</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock"></p></td>
+<td class="tableblock halign-left valign-top" colspan="2" ><p class="tableblock">pkcs15-crypt</p></td>
+<td class="tableblock halign-left valign-top" colspan="2" ><p class="tableblock">pkcs11-tool</p></td>
+<td class="tableblock halign-left valign-top" colspan="2" ><p class="tableblock">raw</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">OsEID card</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">3.2</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">5.4</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">3.7</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">5.9</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">2.6</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">4.8</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">OsEID token</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">2.5</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">4.6</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">3.0</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">5.0</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">2.3</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">4.4</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img src="./images/icons/note.png" alt="Note">
+</td>
+<td class="content">raw measurement - the starting time  of the measurement is before
+sending the PERFORM SECURITY OPERATION APDU to the card and the end time of
+the measurement is the GET RESPONSE operation after receiving the response.
+(Token uses the T1 protocol, here GET RESPONSE APDU is not used)</td>
+</tr></table>
+</div>
 <div class="paragraph"><p>OsEID benefits to MyEID card:</p></div>
 <div class="ulist"><ul>
 <li>
@@ -1325,102 +1430,168 @@ GPL.</p></div>
 <h3 id="_mechanical_construction">Mechanical construction</h3>
 <div class="sect3">
 <h4 id="_card_components">Card components</h4>
-<div class="paragraph"><p>Card is a composition of two components. First component is ATmega 128
-microcontroller or ATmega 128A microcontroller.</p></div>
+<div class="paragraph"><p>Card is a composition of two components.  First component AVR128DA32 in TQFP
+package, device designations AVR128DA32-I/PT or AVR128DA32-E/PT.</p></div>
 <div class="paragraph"><p><span class="image">
-<img src="images/atmega128A_small.png" alt="Atmega128A">
+<img src="images/AVR128DA.jpg" alt="AVR128DA32-I/PT">
 </span></p></div>
-<div class="paragraph"><p>ATmega 128A microcontroller is available with a number of vendors.  You can
-buy ATMEGA128A-AU in TQFP64 package from <a href="http://www.farnell.com">http://www.farnell.com</a> by sale code
-1773397 (about 4.8E / Dec 31 2017).  Alternatively you can buy ATMEGA128A-AU from
-<a href="https://www.tme.eu/en/details/atmega128a-au/8-bit-avr-family/microchip-atmel/">https://www.tme.eu/en/details/atmega128a-au/8-bit-avr-family/microchip-atmel/</a>
-(price about 5.5E / Dec 31 2017).</p></div>
+<div class="paragraph"><p>Microcontroller is available with a number of vendors.</p></div>
+<div class="paragraph"><p>For example:</p></div>
+<div class="paragraph"><p><a href="https://www.tme.eu/en/details/avr128da32-i_pt/8-bit-avr-family/microchip-technology/">https://www.tme.eu/en/details/avr128da32-i_pt/8-bit-avr-family/microchip-technology/</a>
+<a href="https://uk.farnell.com/microchip/avr128da32-e-pt/mcu-8bit-avr-24mhz-tqfp-32/dp/3481939?st=AVR128DA32">https://uk.farnell.com/microchip/avr128da32-e-pt/mcu-8bit-avr-24mhz-tqfp-32/dp/3481939?st=AVR128DA32</a>
+<a href="https://www.digikey.com/product-detail/en/microchip-technology/AVR128DA32-I-PT/150-AVR128DA32-I-PT-ND/12081922">https://www.digikey.com/product-detail/en/microchip-technology/AVR128DA32-I-PT/150-AVR128DA32-I-PT-ND/12081922</a></p></div>
+<div class="paragraph"><p>Price of this component is below 2E.</p></div>
+<div class="paragraph"><p>In years 2015-2019 the  OsEID project, used the Atmega128 microcontroller.
+This component is still supported by OsEID project, but because price of
+this component is bigger and cryptographics operation took longer, AVR128DA
+is preferred microcontroller for future releases of OsEID project.</p></div>
 <div class="paragraph"><p>The second component is single sided printed circuit board (PCB) in the form of plastic
 payment card.</p></div>
 <div class="paragraph"><p><span class="image">
-<img src="images/pcb_scan.png" alt="PCB">
+<img src="images/PCB_AVR.jpg" alt="PCB">
 </span></p></div>
-<div class="paragraph"><p>This board is designed to match card dimensions and card contact pads positions
-defined by ISO 7816-1.  PCB also connects microcontroller leads to card
-contact pads.  There is no vendor for this PCB, but you can produce this PCB at
-your local PCB producer.  Your producer needs gerber file or PDF file or
-simple image as a manufacturing data for PCB production.  Please check
-download section for these files.  Thickness of PCB must be about 0.8mm to
-meet dimensions of card recommended by ISO 7816-1. Picture of PCB is also
-included in <a href="#appendixA">appendix A</a>.</p></div>
+<div class="paragraph"><p>This board is designed to match card dimensions - as defined in ISO/IEC
+7810, format ID-1 and card contact pads positions defined by ISO 7816-2.
+PCB also connects microcontroller leads to card contact pads.</p></div>
+<div class="paragraph"><p>There is no vendor for this PCB, but you can produce this PCB at your local
+PCB producer.  Your producer needs Gerber file or PDF file or simple image
+as a manufacturing data for PCB production.  Please check download section
+for these files.  Thickness of PCB must be about 0.8mm to meet dimensions of
+card recommended by ISO/IEC 7810.  Picture of PCB is also included in
+<a href="#appendixA">appendix A</a>.</p></div>
 </div>
 <div class="sect3">
 <h4 id="_soldering_microcontroller_to_pcb">Soldering microcontroller to PCB</h4>
-<div class="paragraph"><p>PCB and microcontroller together form final smartcard. The components are
-connected by soldering.  ATmega128A microcontroller is available in TQFP or
-QFN/MLF package.  Thickness of QFN/MLF packages is in range 0.8 to 1mm but
-soldering this package in amateur condition is very difficult.  Because of
-soldering difficulty TQFP package was preferred.</p></div>
-<div class="paragraph"><p>Unfortunately, ATmega128A microcontroller in TQFP64 package thickness is
-slightly below 1.2mm precisely in range 0.95 to 1.05mm + lead thickness
-about 0.05 to 0.15mm.</p></div>
+<div class="paragraph"><p>PCB and microcontroller together form final smartcard.  The components are
+connected by soldering.</p></div>
 <div class="paragraph"><p>If we solder TQFP package directly on PCB board, we can achieve thickness
 slightly below 2mm.  That is not good.  To get minimal thickness of card,
 microcontroller is imbedded into printed circuit board.  In the position of
-microcontroller there is a rectangular hole created in PCB with dimensions about 15.3x15.3mm.
-The body of microcontroller is inserted into this hole.  Then
-microcontroller leads are slightly bent upwards and soldered to PCB copper
-contacts from opposite side as normally.  This mounting can achieve final
-thickness of card about 1.1mm.  Most of card readers deal with this
-thickness without problems.</p></div>
+microcontroller there is a rectangular hole created in PCB (dimensions for
+AVR128DA32 about 8.3 x 8.3mm or 15.3 x 15.3 mm for ATmega128).  The body of
+microcontroller is then inserted into this hole.  Then microcontroller leads
+are slightly bent upwards and soldered to PCB copper contacts from opposite
+side as normally.  This mounting can achieve final thickness of card about
+1.1mm.  Most of card readers deal with this thickness without problems.</p></div>
+<div class="paragraph"><p><span class="image">
+<img src="images/AVR128DA_imbending_300.png" alt="Imbedding AVR128DA TQFP package into PCB">
+</span>
+<span class="image">
+<img src="images/ATMEGA128_imbending_300.png" alt="Imbedding ATMEGA128 TQFP package into PCB">
+</span></p></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
 <img src="./images/icons/note.png" alt="Note">
 </td>
-<td class="content">Be aware that final thickness about 1.1mm violates ISO7816-1
+<td class="content">Be aware that final thickness about 1.1mm violates ISO/IEC 7810
 specification, which defines thickness of card to 0.76mm with tolerance
 +0.08mm.</td>
 </tr></table>
 </div>
-<div class="paragraph"><p>PCB dimensions must also match ISO 7816-1 specification: width 85.47mm -
+<div class="paragraph"><p>PCB dimensions must also match ISO/IEC 7810 specification: width 85.47mm -
 85.72mm and height 53.92mm - 54.03mm, and corner radiuses in range 2.88 to
 3.48mm.</p></div>
 <div class="paragraph"><p>It is assumed that you have plenty of mechanical skills and experience with
 soldering surface mounted integrated circuit. Further details
 of the mechanical installation are therefore not listed here.</p></div>
-<div class="paragraph"><p><span class="image">
-<img src="images/imbedding.png" alt="Imbedding TQFP package into PCB">
-</span></p></div>
 </div>
 <div class="sect3">
 <h4 id="_pcb_plating_coating">PCB plating / coating</h4>
-<div class="paragraph"><p>For amateur use, a common printed circuit board without special surface finish will be sufficient.
-Because copper on PCB corrodes on air, sooner or
+<div class="paragraph"><p>For amateur use, a common printed circuit board without special surface
+finish will be sufficient.  Because copper on PCB corrodes on air, sooner or
 later, problems arise when using the card.  If you plan to use the card
 frequently, it is advisable to use circuit board with gold-plated contact
 pads.  An alternative to gold plating is silver plating or nickel plating.
 Consult your local printed circuit board producer what plating he offers and
 at what price.</p></div>
-<div style="page-break-after:always"></div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_programming_microcontroller">Programming microcontroller</h3>
-<div class="paragraph"><p>Before using the card, microprocessor must be programmed with card operation
-system.  You need hex file <em>card.hex</em> that is available in download section.
-To load hex file into ATmega128 microcontroller, you need Microchip/Atmel
-programmer tool with programmer software.  For example, free software can be
-found at <a href="http://www.nongnu.org/avrdude/">http://www.nongnu.org/avrdude/</a>.  Programmer hardware overview can
-be found at <a href="http://www.ladyada.net/learn/avr/programmers.html">http://www.ladyada.net/learn/avr/programmers.html</a>.  You can
-learn more about programming AVR microcontrollers on internet, a good
-website to start is
+<div class="paragraph"><p>Before using the card, microcontroller must be programmed with card
+operation system.  You need hex file <em>card.hex</em> that is available in
+download section.  To load hex file into AVR128DA32 microcontroller, you
+need programmer tool with programmer software.  AVR128DA uses UPDI
+interface, description of UPDI can be found in AVR128DA documentation but
+lot information can be found on internet, for example
+<a href="https://microchipdeveloper.com/atmelice:updi">https://microchipdeveloper.com/atmelice:updi</a></p></div>
+<div class="paragraph"><p>Another open source software inclusive hardware description can be found at
+<a href="https://github.com/mraardvark/pyupdi">https://github.com/mraardvark/pyupdi</a> or <a href="https://github.com/popovec/upditool">https://github.com/popovec/upditool</a></p></div>
+<div class="paragraph"><p>If you decide to use ATmega128 microcontroller, you can found information
+about programming at <a href="http://www.nongnu.org/avrdude/">http://www.nongnu.org/avrdude/</a>.  Programmer hardware
+overview can be found at <a href="http://www.ladyada.net/learn/avr/programmers.html">http://www.ladyada.net/learn/avr/programmers.html</a>.
+You can learn more about programming AVR microcontrollers on internet, a
+good website to start is
 <a href="https://learn.adafruit.com/introducing-trinket/programming-with-avrdude">https://learn.adafruit.com/introducing-trinket/programming-with-avrdude</a>.</p></div>
-<div class="paragraph"><p>At this point the familiarity with programming AVR
-microcontrollers through ISP is assumed. Your card already includes ISP connector but in
-different format as normal Microchip/Atmel ISP6 or ISP10 connectors. Mapping
-microcontroller pins to card contact pads and to standard Microchip/Atmel ISP6 can be
-found in the table below.</p></div>
+<div class="paragraph"><p>At this point the familiarity with programming AVR microcontrollers through
+UPDI/ISP is assumed.</p></div>
+<div class="paragraph"><p>Your card already includes UPDI/ISP connector but in different format as
+normal Microchip/Atmel ISP6 or ISP10 connectors.  Mapping microcontroller
+pins to card contact pads and to standard Microchip ISP6 can be found
+in the tables below.</p></div>
 <table class="tableblock frame-all grid-all"
 style="
 width:80%;
 ">
-<caption class="title">Table 3. Mapping card / microcontroller / ISP contacts</caption>
+<caption class="title">Table 4. Mapping card / AVR128DA / UPDI contacts</caption>
+<col style="width:33%;">
+<col style="width:33%;">
+<col style="width:33%;">
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" > CPU pin name</th>
+<th class="tableblock halign-left valign-top" >ISO pad name</th>
+<th class="tableblock halign-left valign-top" > MICROCHIP name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">GND</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">GND  C5</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">GND       6</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">VDD</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">VCC  C1</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">VCC       2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">PA3</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">RST  C2</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock"></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">UPDI</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">NC   C6</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">UPDI_DATA 1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">PA2</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">CLK  C3</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock"></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">PA4</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">I/O  C7</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock"></p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img src="./images/icons/note.png" alt="Note">
+</td>
+<td class="content">there is another UPDI connector at PCB, near microcontroller three
+pads UPDI/VDD/GND can be found.</td>
+</tr></table>
+</div>
+<table class="tableblock frame-all grid-all"
+style="
+width:80%;
+">
+<caption class="title">Table 5. Mapping card / ATmega128 / ISP contacts</caption>
 <col style="width:33%;">
 <col style="width:33%;">
 <col style="width:33%;">
@@ -1439,12 +1610,12 @@ width:80%;
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">Vcc</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">Vcc  C1</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">VCC  C1</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">VCC    2</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">RESET</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">Vpp  C6</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">NC   C6</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">RESET  5</p></td>
 </tr>
 <tr>
@@ -1464,23 +1635,73 @@ width:80%;
 </tr>
 </tbody>
 </table>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img src="./images/icons/note.png" alt="Note">
+</td>
+<td class="content">PE1 pin is also connected to pin T3 on atmega128, this pin is not used
+in ISP programming mode, but used by card software as clock input from card
+reader.</td>
+</tr></table>
+</div>
 <div class="paragraph"><p>It is recommended to make simple adapter from AVR ISP6 connector to CARD
 contact pads.  You need a smart card connector and a ribbon cable with
 IDC connector with 6 pins. Alternatively, if your programmer already
 contains ribbon cable with 6 pin female IDC connector, you need 6 pin male
-IDC connector.</p></div>
+IDC connector. Make sure to create adapter with correct pinout as described
+in tables above.</p></div>
+<div class="paragraph"><p>Of course, you can use two 6 pins IDC connectors - one for ATmega ISP and
+one for AVR128DA UPDI programmer.  You can use TTL to USB convertor as UPDI
+programmer, then 3 pins connector is enough.</p></div>
 <div class="imageblock">
 <div class="content">
-<img src="images/adapter1.jpg" alt="programming adapter">
+<img src="images/adapter2.jpg" alt="programming adapter UPDI">
 </div>
 </div>
 <div class="paragraph"><p>You can buy it from here:</p></div>
-<div class="paragraph"><p><a href="http://www.tme.eu/en/details/116b-dboa-r/card-connectors/attend/116b-dbo0-r02/">http://www.tme.eu/en/details/116b-dboa-r/card-connectors/attend/116b-dbo0-r02/</a>
-<a href="http://www.tme.eu/en/details/fc06150-s/ribbon-cables-with-idc-connectors/amphenol/">http://www.tme.eu/en/details/fc06150-s/ribbon-cables-with-idc-connectors/amphenol/</a>
-<a href="http://www.tme.eu/en/details/09185066324/idc-connectors/harting/">http://www.tme.eu/en/details/09185066324/idc-connectors/harting/</a></p></div>
+<div class="paragraph"><p><a href="http://www.tme.eu/en/details/116b-dboa-r/card-connectors/attend/116b-dbo0-r02/">http://www.tme.eu/en/details/116b-dboa-r/card-connectors/attend/116b-dbo0-r02/</a>    <br>
+<a href="http://www.tme.eu/en/details/fc06150-s/ribbon-cables-with-idc-connectors/amphenol/">http://www.tme.eu/en/details/fc06150-s/ribbon-cables-with-idc-connectors/amphenol/</a><br>
+<a href="http://www.tme.eu/en/details/09185066324/idc-connectors/harting/">http://www.tme.eu/en/details/09185066324/idc-connectors/harting/</a>                  <br></p></div>
 <div class="paragraph"><p>Carefully connect the cable to the relevant contact pads of smart card
 connector.  Connect this adapter to AVR programmer, insert new card into
 smart card connector and you can upload firmware into your card.</p></div>
+<div class="paragraph"><p>Programming AVR128DA microcontroller:</p></div>
+<div class="paragraph"><p>fuse 1/BODCFG:   0x00<br>
+fuse 2/OSCCFG:   0x00<br>
+fuse 5/SYSCFG0:  0xC0<br>
+fuse 6/SYSCFG1:  0x00<br>
+fuse 7/CODESIZE: 0x80<br>
+fuse 8/BOOTSIZE: 0x80<br></p></div>
+<div class="paragraph"><p>Then upload card.hex file into microcontroller FLASH.</p></div>
+<div class="paragraph"><p>Lock the device by programming LOCK to value 0</p></div>
+<div class="paragraph"><p>Example for <strong>upditool</strong>:</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>$ upditool -P /dev/ttyUSB0 -p avr128da32 -U fuse5:w:0xc0:m -U fuse2:w:0:m
+$ upditool -P /dev/ttyUSB0 -p avr128da32 -U fuse7:w:0x80:m -U fuse8:w:0x80:m
+$ upditool -P /dev/ttyUSB0 -p avr128da32 -e -U flash:w:card.hex:i
+$ upditool -P /dev/ttyUSB0 -p avr128da32 -U lock0:w:0:m</pre>
+</div></div>
+<div class="paragraph"><p>Example for <strong>pyupdi</strong></p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>$ pyupdi.py -c /dev/ttyUSB0 -d avr128da32 -fs 5:0xc0
+$ pyupdi.py -c /dev/ttyUSB0 -d avr128da32 -fs 2:0x00
+$ pyupdi.py -c /dev/ttyUSB0 -d avr128da32 -fs 7:0x80
+$ pyupdi.py -c /dev/ttyUSB0 -d avr128da32 -fs 8:0x80
+$ pyupdi.py -c /dev/ttyUSB0 -d avr128da32 -f card.hex</pre>
+</div></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img src="./images/icons/note.png" alt="Note">
+</td>
+<td class="content">Warning, device remains in unlocked state. There is no support to
+program LOCK by this software (August 2020).</td>
+</tr></table>
+</div>
+<div class="paragraph"><p>Programming ATmega128 microcontroller:</p></div>
 <div class="paragraph"><p>It is recommended to program microcontroller fuses first:</p></div>
 <div class="paragraph"><p>Extended fuses:  0xFF<br>
 High fuses:      0xD9<br>
@@ -1502,10 +1723,30 @@ $ avrdude -p m128 -c avrispmkII -v -U lock:w:0xFC:m</pre>
 <div class="sect2">
 <h3 id="_compiling_from_sources">Compiling from sources</h3>
 <div class="paragraph"><p>You can use source files to build card.hex.  Development is tested on DEBIAN
-9.1.  You need <strong>gcc-avr</strong>, <strong>binutils-avr</strong>, <strong>avr-libc</strong>, <strong>make</strong>, <strong>srecord</strong> and
-<strong>avrdude</strong> package.  You need to unpack OsEID tarball.  Makefiles located in <strong>src</strong> subdirectory
-are used to compile and program the card.  Card serial number
-is automatically generated from actual time/date.</p></div>
+10. You need <strong>gcc-avr</strong>, <strong>binutils-avr</strong>, <strong>avr-libc</strong>, <strong>make</strong>, <strong>srecord</strong> and
+<strong>avrdude</strong> package.  For programming AVR128DA32 device, <strong>pyupdi</strong> or
+<strong>upditool</strong> is needed to (from github).  You need to unpack OsEID tarball.
+Makefiles located in <strong>src</strong> subdirectory are used to compile and program the
+card.  Card serial number is derived from AVR128DA serial number or for
+ATmega128 serial number is is automatically generated from actual time/date.</p></div>
+<div class="paragraph"><p>for AVR128DA based card (<strong>upditool</strong> programmer):</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>make -f Makefile.AVR128DA
+make -f Makefile.AVR128DA program
+make -f Makefile.AVR128DA lock</pre>
+</div></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img src="./images/icons/note.png" alt="Note">
+</td>
+<td class="content">pyupdi programmer can be used to, (make -f Makefile.AVR128DA pyprog)
+but device remains in unlocked state. There is no support to program LOCK
+by this software (August 2020).</td>
+</tr></table>
+</div>
+<div class="paragraph"><p>for Atmega128 based card:</p></div>
 <div class="listingblock">
 <div class="content monospaced">
 <pre>make -f Makefile.atmega128
@@ -1513,6 +1754,14 @@ make -f Makefile.atmega128 fuses
 make -f Makefile.atmega128 program
 make -f Makefile.atmega128 lock</pre>
 </div></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img src="./images/icons/note.png" alt="Note">
+</td>
+<td class="content">avrispmkII programmer is expected</td>
+</tr></table>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_vpp_pad">Vpp pad</h3>
@@ -1540,7 +1789,7 @@ version 0.19.  For other distros, please follow distro specific installation
 of OpenSC package.  Download and install <strong>pcscd</strong> and <strong>pcsc-tools</strong> package.
 According to your card reader, you will need to install specific driver for
 your reader (for example <strong>libccid</strong> or <strong>libacr38u</strong> package, ..  )</p></div>
-<div class="paragraph"><p>Windows users: download and install OpenSC 0.17.  (version 0.18,0.19 is only
+<div class="paragraph"><p>Windows users: download and install OpenSC 0.17.  (version 0.18 - 0.21 is only
 partially tested, please read comments about minidriver configuration below)</p></div>
 <div class="sect2">
 <h3 id="_base_functionality">Base functionality</h3>
@@ -1587,7 +1836,7 @@ defined by interface bytes
 <div style="page-break-after:always"></div>
 </div>
 <div class="sect2">
-<h3 id="_opensc_package_configuration">Opensc package configuration</h3>
+<h3 id="_opensc_package_configuration">OpenSC package configuration</h3>
 <div class="paragraph"><p>If your OpenSC version is 0.20.0 or above, OsEID card is automatically
 recognized. For older versions you need do some changes in configuration.</p></div>
 <div class="paragraph"><p>Configure OpenSC package: edit <strong>/etc/opensc/opensc.conf</strong></p></div>
@@ -1625,9 +1874,9 @@ of OpenSC can be found in download directory.</p></div>
 <h3 id="_windows_minidriver_configuration">Windows minidriver configuration</h3>
 <div class="paragraph"><p>If you plan to use OsEID card in Win 10 (for example in EDGE browser etc.) you
 need install <strong>OpenSC</strong> package (0.17).</p></div>
-<div class="paragraph"><p>Opensc version 0.17.0 functionality with OsEID card has been tested in WIN
+<div class="paragraph"><p>OpenSC version 0.17.0 functionality with OsEID card has been tested in WIN
 10 (both 64 and 32 bit versions).  <strong>certutil</strong> command is fully functional
-and TLS client auth in <strong>EDGE</strong> browser is working.  Opensc 0.18.0 and 0.19 fails
+and TLS client auth in <strong>EDGE</strong> browser is working.  OpenSC 0.18.0 and 0.19 fails
 in EDGE, there is missing PIN dialog.</p></div>
 <div class="paragraph"><p>To use OsEID card, You need configure OpenSC package (add OsEID ATR to
 opensc.conf file) and you need update your registry file.  Please use
@@ -1648,7 +1897,7 @@ OsEID.reg file from download section.</p></div>
 "Smart Card Key Storage Provider"="Microsoft Smart Card Key Storage Provider"
 "Crypto Provider"="OpenSC CSP"</pre>
 </div></div>
-<div class="paragraph"><p>Opensc from version 0.18.0 uses different location of file
+<div class="paragraph"><p>OpenSC from version 0.18.0 uses different location of file
 opensc-minidriver.dll.  Please correct this in your register file:</p></div>
 <div class="listingblock">
 <div class="content monospaced">
@@ -1705,10 +1954,10 @@ Security attributes:     33 3F FF</pre>
 <div class="content monospaced">
 <pre>opensc-tool -i</pre>
 </div></div>
-<div class="paragraph"><p>Then use oseid profile with the same version as OpenSC (for example 0.17):</p></div>
+<div class="paragraph"><p>Then use oseid profile with the same version as OpenSC (for example 0.20):</p></div>
 <div class="literalblock">
 <div class="content monospaced">
-<pre>pkcs15-init -C -c oseid_0.17 --so-pin 00000000 --so-puk 00000000 --pin 1111111</pre>
+<pre>pkcs15-init -C -c oseid_0.20 --so-pin 00000000 --so-puk 00000000 --pin 1111111</pre>
 </div></div>
 </div>
 <div class="sect2">
@@ -1727,7 +1976,7 @@ Security attributes:     33 3F FF</pre>
 </div>
 <div class="sect2">
 <h3 id="_generate_rsa_key">Generate RSA key</h3>
-<div class="paragraph"><p>(Warning, this operation is really slow, may run about 4 minutes but in some
+<div class="paragraph"><p>(Warning, this operation is really slow, may run about 3 minutes but in some
 cases over 30 minutes for 1024 bit key, generating 2048 bit key take about
 45 minutes but in some cases several hours.)</p></div>
 <div class="literalblock">
@@ -1858,7 +2107,7 @@ Making OsEID card)</p></div>
 This is a primary site, code is available in tarball (all sources, firmware
 files compiled from sources in HEX format, and PDF version of doc).</p></div>
 <div class="paragraph"><p>Same site can be reached at <a href="https://oseid.sourceforge.io">https://oseid.sourceforge.io</a></p></div>
-<div class="paragraph"><p>OsEID is also awailable on github - <a href="https://github.com/popovec/oseid">https://github.com/popovec/oseid</a></p></div>
+<div class="paragraph"><p>OsEID is also available on github - <a href="https://github.com/popovec/oseid">https://github.com/popovec/oseid</a></p></div>
 <div class="paragraph"><p>OsEID development track all changes in OpenSC MyEID driver.  All changes in
 OpenSC thats affect correct functions of OsEID card are examined and a
 update is uploaded into <a href="https://github.com/popovec/oseid">https://github.com/popovec/oseid</a>. You usually need
@@ -1898,29 +2147,18 @@ openvpn - secure login to openvpn server
 easy-rsa - sign certificates by private key on card
 </p>
 </li>
+<li>
+<p>
+linux server/desktop - two-factor authentication
+</p>
+</li>
 </ul></div>
 </div>
 <div class="sect2">
 <h3 id="_why_rsa_calculation_is_so_slow">Why RSA calculation is so slow?</h3>
-<div class="paragraph"><p>ATmega128 is 8 bit CPU and runs at  low frequency (about 13.5MHz).
+<div class="paragraph"><p>AVR128DA32 is 8 bit CPU and runs at  low frequency (about 27MHz).
 The chip has only 8x8 bit multiplier, no special acceleration units for
 RSA and ECC, as it is in the world of commercial cards.</p></div>
-</div>
-<div class="sect2">
-<h3 id="_is_there_a_faster_alternative_to_oseid_card">Is there a faster alternative to OsEID card?</h3>
-<div class="paragraph"><p>Yes, you can make OsEID token, but it is more complicated to make it.
-A lot of skill with soldering of SMD components is needed. The token is about two
-times faster than OsEID card.  Token can run 2048 RSA operation in about
-10.5 seconds.  Overclocked version can run 2048 bit RSA operation in about 7 sec.</p></div>
-</div>
-<div class="sect2">
-<h3 id="_why_oseid_is_denoted_as_beta_software">Why OsEID is denoted as BETA software?</h3>
-<div class="paragraph"><p>OsEID card software is in extensive development.  New features are added,
-and lot of old code is optimized.  Lot of internal interfaces are changed
-from version to version.  Finally, card behavior is tested using (partial)
-regression tests.  Through this, nobody can guarantee the flawless function
-of such a large system.  It is advisable to leave the BETA tag (for now) on
-this project.</p></div>
 </div>
 <div class="sect2">
 <h3 id="_i_found_a_bug_in_oseid_card_where_can_i_report_it">I found a bug in OsEID card, where can I report it ?</h3>
@@ -2000,7 +2238,7 @@ Command body, response body
 </li>
 </ol></div>
 <div class="paragraph"><p>Short APDU allow maximal length of DATA field 255 bytes, extended APDU allow
-maximal lento of DATA field up to 65535 bytes.</p></div>
+maximal length of DATA field up to 65535 bytes.</p></div>
 <div class="paragraph"><p>ISO7816-3 defines numbers <strong>Nc</strong> and <strong>Ne</strong> that corresponds to fields <strong>Lc</strong> and
 <strong>Le</strong>. If <strong>Nc</strong> is 0, <strong>Lc</strong> field is not present, <strong>Nc</strong> in range 1..65535
 corresponds to <strong>Lc</strong> in same range. Similar mapping from <strong>Ne</strong> to <strong>Le</strong> exist,
@@ -2157,7 +2395,7 @@ CASE 2.</p></div>
 style="
 width:100%;
 ">
-<caption class="title">Table 4. Allowed cases for INS byte</caption>
+<caption class="title">Table 6. Allowed cases for INS byte</caption>
 <col style="width:9%;">
 <col style="width:45%;">
 <col style="width:9%;">
@@ -2548,7 +2786,7 @@ generate status 0x61XX and then GET RESPONSE is used to return data.</p></div>
 received.  Still INS and P3 can be used to allow transport of extended APDUs
 over T0 protocol.</p></div>
 <div class="paragraph"><p>There is no way to transport command APDU with data field &gt; 255.  Response
-APDU can trasport at maximum 256 byte of response in one APDU.  In some
+APDU can transport at maximum 256 byte of response in one APDU.  In some
 cases (Nc&lt;256, Ne&gt;256), extended APDU can be mapped to multiple APDUs to
 allow receive more than 256 bytes of response.</p></div>
 <div class="paragraph"><p>From card view:</p></div>
@@ -2854,7 +3092,7 @@ then reassembled in card back to original APDU.  State machine for this can
 be found in opensource project <a href="#CCIDusb">[CCIDusb]</a>, in directory src/towitoko/ and
 src/openct/proto-t1.c.  Reverse joining of <strong>I</strong> frames can be found in OsEID
 sources, in file targets/xmega128a4u/ccid.c. Of course, response APDU is
-splitted in card and reassembed in reader/host.</p></div>
+splitted in card and reassembled in reader/host.</p></div>
 <div class="paragraph"><p>If command APDU uses short case 4 (described above), reader must support at
 minimal transport for 4+1+255+1 = 261 bytes.</p></div>
 <div class="paragraph"><p>If command APDU uses extended case 4, then minimal transport size is
@@ -3297,8 +3535,8 @@ generates error in RSA security operation.
 OsEID support is planed for next releases (2020XXXX):
 
 bit 0:  if set, object is marked as session object, after card reset
-        object is automatycaky removed from card
-bi7 3:  for extractable keys, if set, key can be wrapped</pre>
+        object is automatically removed from card
+bit 3:  for extractable keys, if set, key can be wrapped</pre>
 </div></div>
 <div class="listingblock">
 <div class="title">EF</div>
@@ -3571,11 +3809,11 @@ Returned space is filled by value 0xff.</td>
 </tr></table>
 </div>
 <div class="paragraph"><p>If subtree operation is requested, there is no check if some DF in subtree
-is marked by proprietary flag as undeletable. Only currentd DF proprietary
+is marked by proprietary flag as undeletable. Only current DF proprietary
 flag is checked.</p></div>
 <div class="paragraph"><p>For completeness,  ETSI TS 102 222 V7.0.0 (2006-08): Data field can be used
 to specify file ID for delete operation, in this case length of data field
-(Lc) is set to 2, and fiel ID is in data field.  This is not supported by
+(Lc) is set to 2, and field ID is in data field.  This is not supported by
 OsEID card for now.</p></div>
 <div class="paragraph"><p><strong>Responses</strong></p></div>
 <div class="dlist"><dl>
@@ -3735,7 +3973,7 @@ P2 in range 0-0xff
 - Le empty</p></div>
 <div class="paragraph"><p>The ERASE BINARY command fills selected transparent EF with 0xff value. Start
 of fill is selectable by P1, P2 parameters. P1 represent bits 14..8, P2
-represent bit 7..0 of offset. End of fill arrea is not selectable, file is
+represent bit 7..0 of offset. End of fill area is not selectable, file is
 filled up to end.</p></div>
 <div class="paragraph"><p><strong>Responses</strong></p></div>
 <div class="dlist"><dl>
@@ -3836,7 +4074,7 @@ filled up to end.</p></div>
 </ul></div>
 </dd>
 </dl></div>
-<div class="paragraph"><p>ISO7816-4/7.2.7 allow Lc=2, and in data field end of fill arrea in file can
+<div class="paragraph"><p>ISO7816-4/7.2.7 allow Lc=2, and in data field end of fill area in file can
 be specified.  OsEID does not allow Lc=2 for now.</p></div>
 <div style="page-break-after:always"></div>
 </div>
@@ -4258,7 +4496,7 @@ P3 = how many data is requested from card (Le)
 <td class="icon">
 <img src="./images/icons/note.png" alt="Note">
 </td>
-<td class="content">MyEId 4.0.1 does not use <strong>Le</strong> here, for example "Get card capabilities"
+<td class="content">MyEID 4.0.1 does not use <strong>Le</strong> here, for example "Get card capabilities"
 returns always 11 bytes even if <strong>Le</strong> is set to 10,11,12, 0 or 255.
 OsEID uses <strong>Le</strong>, if <strong>Le &lt; number of available bytes</strong>, 0x6cXX status is
 returned.</td>
@@ -4310,6 +4548,7 @@ card, and OsEID card sets these values to correspond to the functions in
 this driver.</p></div>
 <div class="paragraph"><p>Counter bytes are used in MyEID to count write updates into applet. OsEID
 always set this counter to 0</p></div>
+<div style="page-break-after:always"></div>
 </div>
 <div class="sect3">
 <h4 id="_applet_capabilities_informations">Applet capabilities informations</h4>
@@ -4343,24 +4582,25 @@ width:100%;
 </tbody>
 </table>
 <div class="paragraph"><p>OsEID defaults:</p></div>
-<div class="paragraph"><p>CAPS:
-bit 0: RSA support      YES
-bit 1: DES support      YES
-bit 2: AES support      YES
-bit 3: ECC support      YES
-bit 4: Grid PIN support NO
-bit 5: PIV Emulation    NO</p></div>
-<div class="paragraph"><p>RSA length 2048
-DES length  192
-AES length  256
-ECC length  384 or 521 (depends on device version)</p></div>
+<div class="paragraph"><p>CAPS:</p></div>
+<div class="paragraph"><p>bit 0: RSA support      YES<br>
+bit 1: DES support      YES<br>
+bit 2: AES support      YES<br>
+bit 3: ECC support      YES<br>
+bit 4: Grid PIN support NO <br>
+bit 5: PIV Emulation    NO <br></p></div>
+<div class="paragraph"><p>RSA length 2048<br>
+DES length  192<br>
+AES length  256<br>
+ECC length  521<br>
+ECC length  384  -  for old ATMEGA 128 based card<br></p></div>
 </div>
 <div class="sect3">
 <h4 id="_access_condition_table">Access condition table</h4>
-<div class="paragraph"><p>Bits in this table (16 bits) represents AC status:
-bits 0..14 - which PIN is active (by VERIFY operation)
-bit 14 is set if global unblocker status is activated
-bit 15 is set if admin stale is activated</p></div>
+<div class="paragraph"><p>Bits in this table (16 bits) represents AC status:</p></div>
+<div class="paragraph"><p>bits 0..14 - which PIN is active (by VERIFY operation)<br>
+bit 14 is set if global unblocker status is activated <br>
+bit 15 is set if admin stale is activated             <br></p></div>
 <div class="paragraph"><p>P2 for key file GET DATA:
 (Key file must be selected before GET DATA command)</p></div>
 <div class="literalblock">
@@ -4425,7 +4665,6 @@ Grid size (for GRID PIN, not implemented for now)
 PIN minimal length
 PUK minimal length</pre>
 </div></div>
-<div style="page-break-after:always"></div>
 </div>
 </div>
 <div class="sect2">
@@ -4525,7 +4764,7 @@ LE empty
 </li>
 <li>
 <p>
-data lenght must correspond to Lc value.
+data length must correspond to Lc value.
 </p>
 </li>
 <li>
@@ -4543,7 +4782,7 @@ set to values specified by ACL0, ACL1, ACL2.</p></div>
 <div class="paragraph"><p>If ACL4, ACL5, ACL6, are present in data (Lc &gt;=8), DF 5015 access conditions are
 set to values specified by ACL4, ACL5, ACL6.</p></div>
 <div class="paragraph"><p>If APDU provide only ACL0, ACL1, ACL2 and ACL4, ACL5, ACL6 bytes are not
-available (Lc in rande 5..7), DF 5015 is not created.</p></div>
+available (Lc in range 5..7), DF 5015 is not created.</p></div>
 <div class="paragraph"><p>If Lc&gt; 8, unspecified data bytes will be ignored.</p></div>
 <div class="paragraph"><p>If card is already in creation state, no access condition is checked, card
 is erased.  If card is in activated state, access condition is checked first
@@ -4709,18 +4948,19 @@ as structure of 65 bytes.</p></div>
 <div class="paragraph"><p>For RSA keys, card uses only CRT algo, if some of CRT component is not
 available, RSA operation fails.  You need to upload at least: <strong>prime P</strong>,
 <strong>prime Q</strong>, <strong>d<sup>-1</sup> mod (p-1)</strong>, <strong>d<sup>-1</sup> mod (q-1)</strong>, <strong>q<sup>-1</sup> mod P</strong>.</p></div>
-<div class="paragraph"><p>For now, public exponent is not needed by OsEID card, card internaly uses
+<div class="paragraph"><p>For now, public exponent is not needed by OsEID card, card internally uses
 hardcoded public exponent 65537. Future version of OsEID card may need this
 part too (for message blinding and Belcore attack protection), therefore,
 it is recommended to upload <strong>public exponent</strong>.</p></div>
-<div class="paragraph"><p>Card allows upload modulus, but internaly this operation does nothing. If
+<div class="paragraph"><p>Card allows upload modulus, but internally this operation does nothing. If
 card is asked for modulus (GET DATA), modulus is calculated from P and Q.</p></div>
 <div class="paragraph"><p>2048 bit modulus is uploaded in two parts, order of part upload  does not
-matter (MyEID need first upload 1st part, the second). There is alternative
-upload method for 2048 bit modulus, APDU chaining can be used to put whole
-modulus in one operation.</p></div>
+matter (MyEID need first upload 1st part, then second).  There is
+alternative upload method for 2048 bit modulus, APDU chaining can be used to
+put whole modulus in one operation.</p></div>
 <div class="paragraph"><p>Card allows to upload <strong>private exponent</strong>, but this operation does nothing.</p></div>
-<div class="paragraph"><p>Upload operation does not check size/value of modulus and private exponent.</p></div>
+<div class="paragraph"><p>Upload operation does not check size/value of modulus and private exponent
+(parts 80,82,88,89,8A,8B).</p></div>
 <div class="paragraph"><p>Components with ID 0xA3/0xB3 and 0xA4/0xB4 are not standard CRT components.
 Precalculating of these values allows us to speed up RSA calculation. Card
 automatically calculates these values from P and Q components, user is not
@@ -4730,6 +4970,7 @@ turned off at compilation time.</p></div>
 style="
 width:85%;
 ">
+<caption class="title">Table 7. RSA KEY file - internal components</caption>
 <col style="width:33%;">
 <col style="width:11%;">
 <col style="width:11%;">
@@ -4904,7 +5145,7 @@ width:85%;
 </tr>
 </tbody>
 </table>
-<div class="paragraph"><p>MyEID allows to upload <strong>private exponent</strong>, but thes components may
+<div class="paragraph"><p>MyEID allows to upload <strong>private exponent</strong>, but these components may
 overwrite some of CRT components. Please consult MyEID reference manual.</p></div>
 </div>
 </div>
@@ -4972,11 +5213,11 @@ width:85%;
 Lc to 0 or set Lc and data field with this public exponent:</p></div>
 <div class="paragraph"><p>All three formats are identical. First format  does not define public
 exponent, the card then uses default public exponent. If Lc is not 0, data
-field contain ASN1 formated data for public exponent. Only value 65537 is
+field contain ASN1 formatted data for public exponent. Only value 65537 is
 accepted.</p></div>
-<div class="paragraph"><p>Data field is ASN1 formated, 0x30 is SEQUENCE indicator, and value 0x02 or
+<div class="paragraph"><p>Data field is ASN1 formatted, 0x30 is SEQUENCE indicator, and value 0x02 or
 0x81 is used as "public exponent" tag.  (ASN.1 uses 0x02 as tag for INTEGER,
-MyEID 2.1.4 manual defines here tag 0x02 too. Opensc 0.17 send
+MyEID 2.1.4 manual defines here tag 0x02 too. OpenSC 0.17 send
 0x81 here, OsEID for now allows both values).</p></div>
 <div class="paragraph"><p>If key is successfully generated, key file is filled with key data and card
 returns public modulus.</p></div>
@@ -5112,7 +5353,7 @@ width:85%;
 </tr>
 </tbody>
 </table>
-<div class="paragraph"><p>(CASE 3S)</p></div>
+<div class="paragraph"><p>(CASE 1S/3S)</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -5137,11 +5378,17 @@ LE empty
 </ul></div>
 <div class="paragraph"><p>If Lc is 0, this command returns how many authorization retries are left for
 PIN specified by parameter P2 in APDU.</p></div>
+<div class="paragraph"><p>example (CASE 1S):</p></div>
+<div class="paragraph"><p>T0 protocol: 00 20 00 01 00
+T1 protocol: 00 20 00 01</p></div>
 <div class="paragraph"><p>If Lc != 0, data in APDU are used as verification data. Normally exact 8
 bytes are present in APDU Data section and Lc is set to 8.  PIN in Data
 section of APDU is padded by 0xff or 0x00.  If APDU present more data, rest
 of data is ignored.  If APDU presents data below 8 bytes, data are internally
 padded with 0xff.</p></div>
+<div class="paragraph"><p>example (T0/T1 protocol, CASE 3S):</p></div>
+<div class="paragraph"><p>00 20 00 01 04 31 31 31 31
+00 20 00 01 08 31 31 31 31 FF FF FF FF</p></div>
 <div class="dlist"><dl>
 <dt class="hdlist1">
 Responses
@@ -5467,7 +5714,7 @@ X4h - ECDSA/ECDH
 6Xh - SHA-2 512 bit
 80h - PKCS#7 padding</pre>
 </div></div>
-<div class="paragraph"><p>OsEID supports only small set of algorihm reference</p></div>
+<div class="paragraph"><p>OsEID supports only small set of algorithm reference</p></div>
 <div class="literalblock">
 <div class="content monospaced">
 <pre>00h - Raw operation - data length must match key modulus length
@@ -5481,7 +5728,7 @@ X4h - ECDSA/ECDH
 
 04h - ECDSA, ECDH operation</pre>
 </div></div>
-<div class="paragraph"><p>For LEN = 10, OID of cryptograhics mechanism in data field (not supported in
+<div class="paragraph"><p>For LEN = 10, OID of cryptographics mechanism in data field (not supported in
 OsEID)</p></div>
 <div class="literalblock">
 <div class="content monospaced">
@@ -5567,7 +5814,7 @@ width:85%;
 <div class="paragraph"><p>(CASE 4S)</p></div>
 <div class="paragraph"><p>Before security operation correct security environment must be set.
 Access condition must allow use of selected key file.</p></div>
-<div class="paragraph"><p>Command uses key file defined by SET SECURITY ENVIRONMENT command. Actualy
+<div class="paragraph"><p>Command uses key file defined by SET SECURITY ENVIRONMENT command. Actually
 selected file by SELECT command is not affected by this operation.</p></div>
 <div class="paragraph"><p>More types of security operations exists:</p></div>
 <div class="olist arabic"><ol class="arabic">
@@ -5605,7 +5852,7 @@ sign operation, but this operation is identical to raw decipher operation.
 Please use <strong>OpenSC</strong> version from <strong>git</strong>, there is already fix that allows raw
 2048 bit signature.
 <a href="https://github.com/OpenSC/OpenSC/commit/deab9cce73377f973d2020ab5ab7adc302018bf6">https://github.com/OpenSC/OpenSC/commit/deab9cce73377f973d2020ab5ab7adc302018bf6</a>
-Opensc 0.18.0 already contain this patch.</p></div>
+OpenSC 0.18.0 already contain this patch.</p></div>
 <div class="paragraph"><p>APDU chaining is available in OsEID card, for 2048 raw signature this
 transport is preferred.  (MyEID from version 4.5.X allow use of APDU
 chaining too).</p></div>
@@ -5750,7 +5997,7 @@ Verify Cryptographic Checksum
 <div class="ulist"><ul>
 <li>
 <p>
-P1 = 0    - do no treturn any data
+P1 = 0    - do no return any data
 </p>
 </li>
 <li>
@@ -5833,18 +6080,18 @@ P2 = 0x80 or 0xa0
 <div class="paragraph"><p>If P2 = 0x86, 1st byte of ciphertext is padding byte. Allowed padding bytes:</p></div>
 <div class="literalblock">
 <div class="content monospaced">
-<pre>00h = rest of data field is ciphertext (no futher indication)
+<pre>00h = rest of data field is ciphertext (no further indication)
 02h = rest of data field is ciphertext (No padding) (Not supported by OsEID)
 81h = rest of data field is 1st part of ciphertext (MyEID/OsEID proprietary)
 82h = rest of data field is last part of ciphertext (MyEID/OsEID proprietary)</pre>
 </div></div>
 <div class="paragraph"><p>If padding indicator is set to 0, rest of data is handled as ciphertext.
 APDU chaining is allowed to allow transport up to 256 bytes of data.</p></div>
-<div class="paragraph"><p>If paddig indicator set to 0x81, card saves 1st part of ciphertext in
+<div class="paragraph"><p>If padding indicator set to 0x81, card saves 1st part of ciphertext in
 temporary buffer.  Status 0x9000 is returned.  In all other cases the card
 returns result of security operation and status bytes.  If APDU with padding
 indicator 0x82 is received, new data are concatenated with data from
-privious APDU (with padding indicator 0x81) and card performs security
+previous APDU (with padding indicator 0x81) and card performs security
 operation.  Maximum length of concatenated ciphertext is 256 bytes.  APDU
 chaining is not allowed with this type of padding indicators.</p></div>
 <div class="paragraph"><p>Warning, temporary buffer is overwritten by any command that returns data
@@ -5977,8 +6224,18 @@ returned.</p></div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="appendixA">Appendix A: PCB ver 0.1</h2>
+<h2 id="appendixA">Appendix A: PCB</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_avr128da32_v1_0">AVR128DA32 V1.0</h3>
+<div class="imageblock">
+<div class="content">
+<img src="images/OsEID_AVR128DA_pcb_ver1.0.svg" alt="PCB1.0">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_atmega128_v0_1">ATmega128 V0.1</h3>
 <div class="imageblock">
 <div class="content">
 <img src="images/OsEID_pcb_ver0.1.svg" alt="PCB0.1">
@@ -5987,15 +6244,27 @@ returned.</p></div>
 <div style="page-break-after:always"></div>
 </div>
 </div>
+</div>
 <div class="sect1">
-<h2 id="appendixB">Appendix B: Schematics ver 0.1</h2>
+<h2 id="appendixB">Appendix B: Schematics</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_avr128da32_v1_0_2">AVR128DA32 V1.0</h3>
+<div class="imageblock">
+<div class="content">
+<img src="images/OsEID_AVR128DA_sch_ver1.0.svg" alt="SCH1.0">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_atmega128_v0_1_2">ATmega128 V0.1</h3>
 <div class="imageblock">
 <div class="content">
 <img src="images/OsEID_sch_ver0.1.svg" alt="SCH0.1">
 </div>
 </div>
 <div style="page-break-after:always"></div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -6333,7 +6602,7 @@ returned.</p></div>
 </ul></div>
 </dd>
 </dl></div>
-<div class="paragraph"><p>*PUT DATA/INITIALISE PIV EMULATION
+<div class="paragraph"><p>*PUT DATA/INITIALIZE PIV EMULATION
 - 00 DA 01 50 14 [data] not supported by OsEID /planed in future release</p></div>
 <div class="dlist"><dl>
 <dt class="hdlist1">
@@ -6645,7 +6914,7 @@ make -f Makefile.xmega128a4u program</pre>
 way to do this. CPU clock is defined in file <strong>targets/xmega128a4u/avr_os.c</strong></p></div>
 <div class="literalblock">
 <div class="content monospaced">
-<pre>// use PLL - multiply 2MHz RC oscilator to 32MHz
+<pre>// use PLL - multiply 2MHz RC oscillator to 32MHz
   OSC.PLLCTRL = OSC_PLLSRC_RC2M_gc | (32 / 2);</pre>
 </div></div>
 <div class="paragraph"><p>Overwrite multiplication factor <strong>(32 / 2)</strong> to requested value (for example
@@ -6674,7 +6943,7 @@ check safe Z position, tune spindle commands, tool number etc.  Dimensions
 in file are given in mm, make sure your machine uses metric, not imperial
 units.  Use 0.3 up to 0.5mm milling tool.  PCB is positioned at Z=-1, Z=1 is
 used for traverse.  Run your machine without tool first!</p></div>
-<div class="paragraph"><p>AUTHOR IS NOT RESPONSIBLE FOR ANY DAMAGE OF YOUR MACHINE, TOOL OR ANY ANOTER
+<div class="paragraph"><p>AUTHOR IS NOT RESPONSIBLE FOR ANY DAMAGE OF YOUR MACHINE, TOOL OR ANY ANOTHER
 EQUIPMENTS. USE AT YOUR OWN RISK ONLY!</p></div>
 <div class="imageblock">
 <div class="content">
@@ -6725,7 +6994,7 @@ multiplication.</p></div>
 style="
 width:80%;
 ">
-<caption class="title">Table 5. Multiplication speed</caption>
+<caption class="title">Table 8. Multiplication speed</caption>
 <col style="width:12%;">
 <col style="width:12%;">
 <col style="width:12%;">
@@ -6747,13 +7016,23 @@ width:80%;
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">clock cycles</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">2860</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">2854</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">4500</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">9986</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">15330</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">17568</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">33201</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">50276</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">xmega cycles</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">2707</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">4283</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">-</p></td>
 </tr>
 </tbody>
 </table>
@@ -6767,6 +7046,16 @@ width:80%;
 <strong>targets/simulavr/Readme</strong> from OsEID tarball.</td>
 </tr></table>
 </div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img src="./images/icons/note.png" alt="Note">
+</td>
+<td class="content">clock cycles mentioned here are calculated for ATmega128.
+Xmega/AVR128DA can run faster, because memory store instructions (ST/PUSH)
+is running in one cycle - ATmega need two cycles here.</td>
+</tr></table>
+</div>
 <div class="sect3">
 <h4 id="_truncated_multiplication_speed">Truncated multiplication speed</h4>
 <div class="paragraph"><p>Result of this multiplication is in same length as operand length. Only low
@@ -6775,7 +7064,7 @@ bits from result are available at end of this operation.</p></div>
 style="
 width:80%;
 ">
-<caption class="title">Table 6. Trucnated multiplication speed</caption>
+<caption class="title">Table 9. Trucnated multiplication speed</caption>
 <col style="width:16%;">
 <col style="width:16%;">
 <col style="width:16%;">
@@ -6813,7 +7102,7 @@ code is interrupt safe too.</p></div>
 style="
 width:80%;
 ">
-<caption class="title">Table 7. Squaring speed</caption>
+<caption class="title">Table 10. Squaring speed</caption>
 <col style="width:12%;">
 <col style="width:12%;">
 <col style="width:12%;">
@@ -6835,13 +7124,23 @@ width:80%;
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">clock cycles</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">1847</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">3093</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">6556</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">10644</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">1839</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">3081</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">6532</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">10608</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">12855</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">21864</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">34842</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">21792</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">34713</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">xmega cycles</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">1722</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">2883</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">-</p></td>
 </tr>
 </tbody>
 </table>
@@ -6888,7 +7187,7 @@ instructions.  AVR assembler version of this code needs 262593 clock cycles
 for 1024 bit number (575021 clock cycles for 1536, 1008281 clock cycles for
 2048).  The code run in constant time.</p></div>
 <div class="paragraph"><p>To speed up this part of code, new code uses precalculated constant <em>Bc</em>.
-Reduction speed up is based on modificied Barrett method described in
+Reduction speed up is based on modified Barrett method described in
 <a href="#Hasenplaugh">[Hasenplaugh]</a>.</p></div>
 <div class="paragraph"><p>Let <em>M</em> be modulus of <em>n</em> bits length.  Number <em>N</em> is to be reduced by <em>M</em>.
 Maximal bit length of <em>N</em> is <em>2n</em>.  Constant <em>Bc</em> of maximal bit length <em>n</em>
@@ -6905,11 +7204,11 @@ with <em>Bc</em> uses two <em>0.5n</em> bits multiplications.</p></div>
 but there is only <em>1+1.5n</em> bits to reduce not <em>2n</em> bits.</p></div>
 <div class="paragraph"><p>Only for completeness, there is some things that can be observed:</p></div>
 <div class="paragraph"><p>If number <em>N</em> is result of multiplication of two numbers  <em>A &lt; M</em>, <em>B &lt; M</em>,
-and <em>Rp</em> of bit length <em>1+1.5n</em> is result form (2), then result <em>R &lt; M</em> can
+and <em>Rp</em> of bit length <em>1+1.5n</em> is result from (2), then result <em>R &lt; M</em> can
 be computed by at most three subtractions of <em>M &lt;&lt; 0.5n</em> from <em>Rp</em></p></div>
 <div class="paragraph"><p>In RSA cryptosystem, prime <em>P</em> and <em>Q</em> has highest bit always set to 1 (i.e.
 0x8001 for n=16, <em>M</em> in this calculation corresponds to <em>P</em> or <em>Q</em>).  At
-most two substraction of <em>M &lt;&lt; 0.5n</em> is enough to reduce <em>Rp</em> to maximum
+most two subtraction of <em>M &lt;&lt; 0.5n</em> is enough to reduce <em>Rp</em> to maximum
 <em>1.5n</em> bits.  This is also true for any <em>A &lt; 2<sup>n</sup>, B &lt; 2<sup>n</sup></em></p></div>
 </div>
 <div class="sect3">
@@ -6969,8 +7268,7 @@ multiplication.</p></div>
 sized multiplications.</p></div>
 <div class="paragraph"><p>Old and new code need some overhead for additions  and subtractions. Finally,
 old code with full sized  Montgomery reduction for reducing 1024 bit to 512
-bit need about 27000 clock cycles. New code needs only 24300 clock cycles.
-This speed up calculation of RSA in about 10%.</p></div>
+bit need about 27000 clock cycles. New code needs only 24300 clock cycles.</p></div>
 <div class="paragraph"><p>Maybe this algorithm reminds someone of so-called bipartite Modular
 multiplication but there is difference in reduction of upper bits. Bipartite
 method uses some multiply of <em>n</em> to reduce upper part of <em>N</em>. This code is
@@ -6993,14 +7291,14 @@ curves and for secp256k1 curve.  EC point multiplication is designed as
 constant time, with multiplication window of 4 bits.  Point multiplication
 is blinded.  For each supported curve, a separate fast reduction algorithm
 is used. The secp521r1 curve is supported only on devices with 8KB RAM and
-more (ATmega 1284, xmega128A4U). Firmware for atmega128 microcontroller can
+more (AVR128DA, xmega128A4U). Firmware for atmega128 microcontroller can
 be recompiled with two bits multiplication window, then secp521r1 is running
 on this device.</p></div>
 <table class="tableblock frame-all grid-all"
 style="
 width:80%;
 ">
-<caption class="title">Table 8. ECDSA operation timing, blinded, in millions of clock cycles</caption>
+<caption class="title">Table 11. ECDSA operation timing, blinded, in millions of clock cycles</caption>
 <col style="width:20%;">
 <col style="width:20%;">
 <col style="width:20%;">
@@ -7071,7 +7369,7 @@ makes no sense to optimize 512/768 bit calculation for window size 5 bits.</p></
 style="
 width:80%;
 ">
-<caption class="title">Table 9. RSA private operation timing (in millions of clock cycles)</caption>
+<caption class="title">Table 12. RSA private operation timing (in millions of clock cycles)</caption>
 <col style="width:16%;">
 <col style="width:16%;">
 <col style="width:16%;">
@@ -7293,7 +7591,7 @@ calculation there are operations like <span class="monospaced">M mod P</span> an
 reduction is running in constant time, but is not blinded.  There is a way
 to extract power fingerprint from this operation.  It is necessary to run
 lot of power traces to get reliable power fingerprint from the same message.
-Several special formated messages must be traced to get some information
+Several special formatted messages must be traced to get some information
 about P/Q.  Because number of analyzed messages run over 30 000, this type
 of attack is not realistic for now.  More about this attack to this function
 can be found in <a href="#DPA_on_modular_reduction">[DPA_on_modular_reduction]</a>.</p></div>
@@ -7361,7 +7659,7 @@ prime.  (Listed in row  "MR loop pass").</p></div>
 style="
 width:100%;
 ">
-<caption class="title">Table 10. RSA key generation statistics (for 10 000 keys)</caption>
+<caption class="title">Table 13. RSA key generation statistics (for 10 000 keys)</caption>
 <col style="width:16%;">
 <col style="width:16%;">
 <col style="width:16%;">
@@ -7448,7 +7746,7 @@ together).</p></div>
 style="
 width:100%;
 ">
-<caption class="title">Table 11. average GCD speed (in millions of clock cycles)</caption>
+<caption class="title">Table 14. average GCD speed (in millions of clock cycles)</caption>
 <col style="width:25%;">
 <col style="width:25%;">
 <col style="width:25%;">
@@ -7474,9 +7772,9 @@ width:100%;
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">time - card  (seconds)</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">0.126</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">0.148</p></td>
-<td class="tableblock halign-left valign-top" ><p class="tableblock">0.178</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">0.063</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">0.076</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">0.089</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">time - token (seconds)</p></td>
@@ -7487,12 +7785,12 @@ width:100%;
 </tbody>
 </table>
 <div class="paragraph"><p>For one prime (512 bit) we need in average 147 GCD operations, total time
-147*0.148 = about 22 seconds.  Then 29+6 Miller-Rabin test (one about 1.9 sec)
-= about 66.5 seconds.  For one prime we need in average 89 seconds.</p></div>
-<div class="paragraph"><p>Generation of 1024 bit key (4 primes ) then take in average about 6 minutes,
-but in worst case over 30 minutes.</p></div>
+147*0.076 = about 11 seconds.  Then 29+6 Miller-Rabin test (one about 1 sec)
+= about 35 seconds.  For one prime we need in average 46 seconds.</p></div>
+<div class="paragraph"><p>Generation of 1024 bit key (4 primes ) then take in average about 3 minutes,
+but in worst case over 15 minutes.</p></div>
 <div class="paragraph"><p>When generating a 2048 bit key you have to be very patient.  Count with time
-1 to 3 hours.  (One Miller-Rabin test run in about 11 second - there is
+0.5 to 1.5 hours.  (One Miller-Rabin test run in about 5.5 second - there is
 really no way to run this faster with only one 8 bit multiplier in AVR)</p></div>
 <div class="paragraph"><p>Keep in mind, if you generate a key, operation is not blinded.
 Exponentiation in Miller-Rabin test, squaring, and CRT components
@@ -7501,7 +7799,7 @@ DPA or IPA can be used to extract some informations about generated key.
 Therefore it is recommended to generate key only in secure environment, if
 key security is important.</p></div>
 <div class="paragraph"><p>OsEID project does not use strong primes for P and Q.  Strong primes can
-protect us from faktorization of modulus using Pollard&#8217;s algorithm, but
+protect us from factorization of modulus using Pollard&#8217;s algorithm, but
 strong primes do not protect us against new methods of modulus factorization
 for example Lenstra elliptic curve factorization or Number Field Sieve.</p></div>
 <div class="paragraph"><p><em>RSA key generation is not resistant to side channels attack</em></p></div>
@@ -7559,6 +7857,16 @@ been warned.</em></p></div>
 </p>
 </li>
 </ul></div>
+<div class="sect3">
+<h4 id="_avr128da">AVR128DA</h4>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="https://www.microchip.com/wwwproducts/en/AVR128DA32">https://www.microchip.com/wwwproducts/en/AVR128DA32</a>
+</p>
+</li>
+</ul></div>
+</div>
 <div class="sect3">
 <h4 id="_atmega128">atmega128</h4>
 <div class="ulist"><ul>
@@ -7885,22 +8193,22 @@ been warned.</em></p></div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="appendixH">Appendix H: Opensc patches</h2>
+<h2 id="appendixH">Appendix H: OpenSC patches</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_opensc_0_20">Opensc 0.20</h3>
-<div class="paragraph"><p>Card is automaticaly detected. No patch is needed. If you need support for
+<h3 id="_opensc_0_20_and_0_21">OpenSC 0.20 and 0.21</h3>
+<div class="paragraph"><p>Card is automatically detected. No patch is needed. If you need support for
 secp256k1, please read about experimental support for secp256k1 below.</p></div>
 </div>
 <div class="sect2">
-<h3 id="_opensc_0_17_018_and_0_19">Opensc 0.17, 018 and 0.19</h3>
-<div class="paragraph"><p>Opensc 0.17, 0.18 and 0.19 can detect all features of OsEID except of
+<h3 id="_opensc_0_17_018_and_0_19">OpenSC 0.17, 018 and 0.19</h3>
+<div class="paragraph"><p>OpenSC 0.17, 0.18 and 0.19 can detect all features of OsEID except of
 support for secp256k1.  To use myeid driver for OsEID card you need to
 configure OpenSC package only.  Please insert OsEID ATR into <strong>opensc.conf</strong>
 file.</p></div>
 <div class="sect3">
 <h4 id="_experimental_support_for_secp256k1">Experimental support for secp256k1</h4>
-<div class="paragraph"><p>Opensc can signalize support for secp256k1 curve.  For Opensc 0.17, 0.18 and
+<div class="paragraph"><p>OpenSC can signalize support for secp256k1 curve.  For OpenSC 0.17, 0.18 and
 0.19 following patch is suggested:</p></div>
 <div class="literalblock">
 <div class="content monospaced">
@@ -7937,7 +8245,7 @@ file.</p></div>
         card-&gt;caps |= SC_CARD_CAP_RNG | SC_CARD_CAP_ISO7816_PIN_INFO;</pre>
 </div></div>
 <div class="paragraph"><p>With this patch you can upload secp256k1 key into card. You can generate key
-by openssl and upload to card by standart opensc tool:</p></div>
+by openssl and upload to card by standard opensc tool:</p></div>
 <div class="literalblock">
 <div class="content monospaced">
 <pre>pkcs1515-init --store-private-key key.pem</pre>
@@ -7977,7 +8285,7 @@ generate 0x23 value in tag 0x82 for EC keys.</p></div>
 
         struct sc_cardctl_myeid_data_obj {</pre>
 </div></div>
-<div class="paragraph"><p>After generating secp256k1 key, recompile opencs with original
+<div class="paragraph"><p>After generating secp256k1 key, recompile OpenSC with original
 libopensc/cardctl.h, and load/generate rest of normal (NIST) EC keys, RSA
 keys etc.</p></div>
 <div style="page-break-after:always"></div>
@@ -7988,16 +8296,21 @@ keys etc.</p></div>
 <div class="sect1">
 <h2 id="appendixI">Appendix I: Random generator implementation</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Both  implementations (ATmega128  and xmega) use similar and very simple
-random number generator.  There is no seed, no hash function, no reseed
+<div class="paragraph"><p>There is very simple random generator used in all devices (AVR128DA32,
+ATmega128 and xmega).  There is no seed, no hash function, no reseed
 function.</p></div>
-<div class="paragraph"><p>Xmega uses 12 bit ADC to measure internal temperature sensor (to internal
-band gap reference).  Only bit 0 from ADC conversion is used as entropy
-value.</p></div>
+<div class="paragraph"><p>AVR128DA32 and Xmega uses 12 bit ADC to measure internal temperature sensor.</p></div>
+<div class="paragraph"><p>AVR128DA32 internal band gap is usable only if supply voltage is over 2.5V.
+Because card is able to run in reader with supply voltage 1.8V, no band gap
+but input supply voltage is used as reference for ADC.</p></div>
+<div class="paragraph"><p>xmega128a4u uses internal band gap as reference for ADC.</p></div>
+<div class="paragraph"><p>Only bit 0 from ADC conversion is used as entropy value.</p></div>
 <div class="paragraph"><p>Generator tests by <strong>ent</strong> software from <a href="http://www.fourmilab.ch/random/">http://www.fourmilab.ch/random/</a> (This
 tests are made with small data blocks, random generator quality is here well
 demonstrated - RSA key generation and ECC cryptography uses small data
 blocks)</p></div>
+<div class="paragraph"><p>Even AVR128DA32 and xmega128a4u use different reference voltage for ADC,
+both implementations show approximately identical results.</p></div>
 <div class="literalblock">
 <div class="content monospaced">
 <pre>File parsed as the bit stream:
@@ -8029,7 +8342,7 @@ Monte Carlo value for Pi is 3.155709343 (error 0.45 percent).
 Serial correlation coefficient is 0.001352 (totally uncorrelated = 0.0).</pre>
 </div></div>
 <div class="paragraph"><p>The result is excellent for such a simple generator.</p></div>
-<div class="paragraph"><p>Unfortunately, similar result is not available on atmega with 10 bit ADC.
+<div class="paragraph"><p>Unfortunately, similar result is not available on atmega128 with 10 bit ADC.
 There is no temperature sensor.  ADC is set to measure input voltage (to
 internal band gap reference).  Only bit 0 from ADC conversion is used as
 entropy value.</p></div>
@@ -8205,16 +8518,18 @@ RNG.)</p></div>
 USB utilization  also have an impact on speed tests.</p></div>
 <table class="tableblock frame-all grid-all"
 style="
-width:80%;
+width:90%;
 ">
-<col style="width:42%;">
+<col style="width:28%;">
+<col style="width:14%;">
 <col style="width:14%;">
 <col style="width:14%;">
 <col style="width:14%;">
 <col style="width:14%;">
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top" >                  </th>
+<th class="tableblock halign-left valign-top" >                 </th>
+<th class="tableblock halign-left valign-top" > AVR128DA32    </th>
 <th class="tableblock halign-left valign-top" > xmega        </th>
 <th class="tableblock halign-left valign-top" > atmega       </th>
 <th class="tableblock halign-left valign-top" > atmega+DES   </th>
@@ -8224,6 +8539,7 @@ width:80%;
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">240 bytes in APDU</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">772 bytes/sec</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">4661 bytes/sec</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">1346 bytes/sec</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">640 bytes/sec</p></td>
@@ -8231,6 +8547,7 @@ width:80%;
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">32 bytes in APDU</p></td>
+<td class="tableblock halign-left valign-top" ><p class="tableblock">460 bytes/sec</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">750 bytes/sec</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">340 bytes/sec</p></td>
 <td class="tableblock halign-left valign-top" ><p class="tableblock">225 bytes/sec</p></td>
@@ -8253,7 +8570,11 @@ reader is attached to <strong>pcscd</strong>.  Simulation creates one file <stro
 where it maintains the FLASH and EEPROM memory of card.</p></div>
 <div class="paragraph"><p>For now, this simulator must run with <strong>root privileges</strong>.  <strong>Consider this before
 running</strong> this on your computer.  You need <strong>socat</strong> package to run simulation.
-This simulation is tested on DEBIAN 9.1 system.</p></div>
+This simulation is tested on DEBIAN 9 and DEBIAN 10 system.</p></div>
+<div class="paragraph"><p><a href="#OpenSC">[OpenSC]</a> project uses this simulation for CI tests on
+<a href="https://travis-ci.org/">https://travis-ci.org/</a>, here simulation is running on Ubuntu bionic.  For
+details about this CI test please read
+<a href="https://github.com/OpenSC/OpenSC/blob/master/.travis.yml">https://github.com/OpenSC/OpenSC/blob/master/.travis.yml</a></p></div>
 <div class="paragraph"><p>Steps to use:</p></div>
 <div class="literalblock">
 <div class="content monospaced">
@@ -8334,6 +8655,11 @@ or decipher with 256 bit key.</p></div>
 <h2 id="appendixL">Appendix L: Application setup</h2>
 <div class="sectionbody">
 <div class="sect2">
+<h3 id="_openssh">openssh</h3>
+<div class="paragraph"><p>Insert path to pkcs11 library into <em>.ssh/config</em> file:</p></div>
+<div class="paragraph"><p>PKCS11Provider /usr/lib/x86_64-linux-gnu/opensc-pkcs11.so</p></div>
+</div>
+<div class="sect2">
 <h3 id="_openvpn">openvpn</h3>
 <div class="paragraph"><p>Insert path to pkcs11 library into openvpn config file:</p></div>
 <div class="paragraph"><p>pkcs11-providers /usr/lib/x86_64-linux-gnu/opensc-pkcs11.so</p></div>
@@ -8342,11 +8668,73 @@ or decipher with 256 bit key.</p></div>
 <div class="paragraph"><p>Copy <em>Serialized id</em> from previous command output, and insert this into your
 openvpn config file:</p></div>
 <div class="paragraph"><p>pkcs11-id ' --- here serialized id&#8201;&#8212;&#8201;'</p></div>
+<div class="paragraph"><p>If you use RSA key, you can hit a error:</p></div>
+<div class="paragraph"><p>2020-10-12 16:41:13 us=348869 OpenSSL: error:141F0006:SSL routines:tls_construct_cert_verify:EVP lib
+2020-10-12 16:41:13 us=348892 TLS_ERROR: BIO read tls_read_plaintext error
+2020-10-12 16:41:13 us=348907 TLS Error: TLS object &#8594; incoming plaintext read error
+2020-10-12 16:41:13 us=348921 TLS Error: TLS handshake failed
+2020-10-12 16:41:13 us=349019 Fatal TLS error (check_tls_errors_co), restarting</p></div>
+<div class="paragraph"><p>In this case please upgrade:
+openvpn to version 2.5-rc2
+libpkcs11-helper1 to version 1.26</p></div>
 </div>
 <div class="sect2">
-<h3 id="_openssh">openssh</h3>
-<div class="paragraph"><p>Insert path to pkcs11 library into <em>.ssh/config</em> file:</p></div>
-<div class="paragraph"><p>PKCS11Provider /usr/lib/x86_64-linux-gnu/opensc-pkcs11.so</p></div>
+<h3 id="_chromium">chromium</h3>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+exit chromium
+</p>
+</li>
+<li>
+<p>
+in command promt (if modutil is missing, please install libnss3-tools package):
+</p>
+<div class="literalblock">
+<div class="content monospaced">
+<pre>$ cd
+$ modutil -dbdir sql:.pki/nssdb/ -add "opensc" -libfile  /usr/lib/x86_64-linux-gnu/opensc-pkcs11.so</pre>
+</div></div>
+</li>
+<li>
+<p>
+check configuration:
+</p>
+<div class="literalblock">
+<div class="content monospaced">
+<pre>$ modutil -dbdir sql:.pki/nssdb/ -list</pre>
+</div></div>
+</li>
+<li>
+<p>
+start chromium
+</p>
+</li>
+</ol></div>
+<div style="page-break-after:always"></div>
+</div>
+<div class="sect2">
+<h3 id="_apache_2_4_37_38_setup">apache 2.4.37(38) setup</h3>
+<div class="paragraph"><p>secured directory /var/www/html/SSL_AUTH_TEST/</p></div>
+<div class="paragraph"><p>insert into /etc/apache2/sites-available/default-ssl.conf</p></div>
+<div class="literalblock">
+<div class="content monospaced">
+<pre>SSLVerifyClient none
+SSLVerifyDepth 1
+SSLCACertificateFile "/var/www/html/SSL_AUTH_TEST/ca.crt"
+SSLOCSPResponderTimeout 60
+SSLProtocol TLSv1.2
+
+&lt;Location "/SSL_AUTH_TEST"&gt;
+SSLVerifyClient require
+SSLVerifyDepth 1
+SSLRequire %{SSL_CIPHER_USEKEYSIZE} &gt;= 80
+&lt;/Location&gt;</pre>
+</div></div>
+<div class="paragraph"><p>Do not use TLSv1.3 here, firefox/chromium fails here with message:
+"Cannot perform Post-Handshake Authentication."</p></div>
+<div class="paragraph"><p>This appendix is only partial, please read on internet for example:</p></div>
+<div class="paragraph"><p><a href="http://cedric.dufour.name/blah/IT/SmartCardsHowto.html">http://cedric.dufour.name/blah/IT/SmartCardsHowto.html</a></p></div>
 </div>
 </div>
 </div>
@@ -8641,7 +9029,7 @@ if ((EE == 1 or EE == N-1)) then (
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2019-09-30 09:59:44 CEST
+ 2020-11-30 13:53:25 CET
 </div>
 </div>
 </body>
