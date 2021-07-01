@@ -769,7 +769,7 @@ asciidoc.install(2);
 <h1>OsEID smart card &amp; OsEID token</h1>
 <span id="author">Peter Popovec</span><br>
 <span id="email" class="monospaced">&lt;<a href="mailto:popovec.peter@gmail.com">popovec.peter@gmail.com</a>&gt;</span><br>
-<span id="revdate">Mon Nov 30 13:53:42 CET 2020</span>
+<span id="revdate">Thu Jul  1 10:48:19 CEST 2021</span>
 <div id="toc">
   <div id="toctitle">Table of Contents</div>
   <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
@@ -778,7 +778,7 @@ asciidoc.install(2);
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="paragraph"><p>Copyright &#169; 2015-2020 Peter Popovec &lt;<a href="mailto:popovec.peter@gmail.com">popovec.peter@gmail.com</a>&gt;</p></div>
+<div class="paragraph"><p>Copyright &#169; 2015-2021 Peter Popovec &lt;<a href="mailto:popovec.peter@gmail.com">popovec.peter@gmail.com</a>&gt;</p></div>
 </div>
 </div>
 <div class="sect1">
@@ -937,6 +937,11 @@ Supported in Linux/Windows by OpenSC package - MyEID driver
 </li>
 <li>
 <p>
+Support for T0 and T1 protocol
+</p>
+</li>
+<li>
+<p>
 OsEID card: Communication speed 312500 bits/s for 5MHz readers
 </p>
 </li>
@@ -963,11 +968,6 @@ It is not possible to buy it, you have to make it.
 <li>
 <p>
 Documentation is still in the form of draft.
-</p>
-</li>
-<li>
-<p>
-card - only T0 protocol, T1 available only in token/simulator
 </p>
 </li>
 <li>
@@ -1768,8 +1768,10 @@ make -f Makefile.atmega128 lock</pre>
 <div class="paragraph"><p>In year 2006, the standard ISO 7816 changed the definition of <strong>Vpp</strong> pad.
 This pad is no longer used for programming voltage.  If you use newer reader
 (produced after 2006), card may work, or fail in this reader.  If your OsEID
-card does not working in your card reader, Vpp pad of card pad must be isolated
+card does not working in your card reader, Vpp pad on card must be isolated
 from reader.  This can be done by stick self-adhesive tape on Vpp pad.</p></div>
+<div class="paragraph"><p>Known issue: Alcor Micro AU9560 USB reader - OsEID card (AVR128DA or
+Atmega128 based) is not working in this reader without Vpp pad isolation.</p></div>
 </div>
 <div class="sect2">
 <h3 id="_building_oseid_token">Building OsEID-token</h3>
@@ -1873,37 +1875,38 @@ of OpenSC can be found in download directory.</p></div>
 <div class="sect2">
 <h3 id="_windows_minidriver_configuration">Windows minidriver configuration</h3>
 <div class="paragraph"><p>If you plan to use OsEID card in Win 10 (for example in EDGE browser etc.) you
-need install <strong>OpenSC</strong> package (0.17).</p></div>
-<div class="paragraph"><p>OpenSC version 0.17.0 functionality with OsEID card has been tested in WIN
-10 (both 64 and 32 bit versions).  <strong>certutil</strong> command is fully functional
-and TLS client auth in <strong>EDGE</strong> browser is working.  OpenSC 0.18.0 and 0.19 fails
-in EDGE, there is missing PIN dialog.</p></div>
-<div class="paragraph"><p>To use OsEID card, You need configure OpenSC package (add OsEID ATR to
-opensc.conf file) and you need update your registry file.  Please use
-OsEID.reg file from download section.</p></div>
+need install <strong>OpenSC</strong> package</p></div>
+<div class="paragraph"><p>OpenSC version 0.22.0-rc1 functionality with OsEID card has been tested in
+WIN 10, <strong>certutil</strong> command is fully functional and TLS client auth in <strong>EDGE</strong>
+browser is working.</p></div>
+<div class="paragraph"><p>To use OsEID card, with minidriver, you need to update  your registry file.
+Please use OsEID.reg file from download section. Here example used for
+opensc 0.22.0-rc1:</p></div>
 <div class="listingblock">
 <div class="content monospaced">
-<pre>[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography\Calais\SmartCards\OsEID]
-"80000001"="opensc-minidriver.dll"
+<pre>[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography\Calais\SmartCards\OsEID-old]
+"80000001"="C:\\Program Files\\OpenSC Project\\OpenSC\\minidriver\\opensc-minidriver.dll"
 "ATR"=hex:3b,f5,00,00,02,10,80,4f,73,45,49,44
 "ATRmask"=hex:ff,ff,00,ff,ff,ff,ff,ff,ff,ff,ff,ff
 "Smart Card Key Storage Provider"="Microsoft Smart Card Key Storage Provider"
 "Crypto Provider"="OpenSC CSP"
 
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography\Calais\SmartCards\OsEID]
+"80000001"="C:\\Program Files\\OpenSC Project\\OpenSC\\minidriver\\opensc-minidriver.dll"
+"ATR"=hex:3b,d5,96,02,80,31,fe,65,4f,73,45,49,44,1f
+"ATRmask"=hex:ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff,ff
+"Smart Card Key Storage Provider"="Microsoft Smart Card Key Storage Provider"
+"Crypto Provider"="OpenSC CSP"
+
 [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography\Calais\SmartCards\OsEID-token]
-"80000001"="opensc-minidriver.dll"
+"80000001"="C:\\Program Files\\OpenSC Project\\OpenSC\\minidriver\\opensc-minidriver.dll"
 "ATR"=hex:3b,f5,00,00,02,80,01,4f,73,45,49,44,00
 "ATRmask"=hex:ff,ff,00,ff,ff,ff,ff,ff,ff,ff,ff,ff,00
 "Smart Card Key Storage Provider"="Microsoft Smart Card Key Storage Provider"
 "Crypto Provider"="OpenSC CSP"</pre>
 </div></div>
-<div class="paragraph"><p>OpenSC from version 0.18.0 uses different location of file
-opensc-minidriver.dll.  Please correct this in your register file:</p></div>
-<div class="listingblock">
-<div class="content monospaced">
-<pre>"80000001"="C:\Program Files\OpenSC Project\OpenSC\minidriver\opensc-minidriver.dll"</pre>
-</div></div>
-<div class="paragraph"><p>For 32 bit OpenSC version on 64 bit system:</p></div>
+<div class="paragraph"><p>For 32 bit OpenSC version on 64 bit system there is small change in
+minidriver path:</p></div>
 <div class="listingblock">
 <div class="content monospaced">
 <pre>"80000001"="C:\Program Files (x86)\OpenSC Project\OpenSC\minidriver\opensc-minidriver.dll"</pre>
@@ -3532,11 +3535,12 @@ generates error in RSA security operation.
 2nd byte:
 00h     - default
 
-OsEID support is planed for next releases (2020XXXX):
+bit 3:  for extractable keys, if set, key can be wrapped (AES/DES key only)
+
+OsEID support is planed for next releases (202XXXXX):
 
 bit 0:  if set, object is marked as session object, after card reset
-        object is automatically removed from card
-bit 3:  for extractable keys, if set, key can be wrapped</pre>
+        object is automatically removed from card</pre>
 </div></div>
 <div class="listingblock">
 <div class="title">EF</div>
@@ -5811,7 +5815,9 @@ width:85%;
 </tr>
 </tbody>
 </table>
-<div class="paragraph"><p>(CASE 4S)</p></div>
+<div class="paragraph"><p>(CASE 2S   WRAP operation)
+(CASE 3S   UNWRAP operation)
+(CASE 4S/E encipher, decipher, sign)</p></div>
 <div class="paragraph"><p>Before security operation correct security environment must be set.
 Access condition must allow use of selected key file.</p></div>
 <div class="paragraph"><p>Command uses key file defined by SET SECURITY ENVIRONMENT command. Actually
@@ -6102,11 +6108,6 @@ decipher P2 = 0x86 is requested.  OsEID allows both values for AES/DES/RSA
 decipher.  OsEID allows arbitrary length of ciphertext parts for padding
 indicators 81h and 82h.  MyEID manual 2.1.4 defines use of this padding
 indicators for 2048 bit keys.</p></div>
-<div class="paragraph"><p>WARNING!  OsEID support for DES and AES security operation is experimental.
-If selected key file contain AES/DES key, security operation is allowed only
-for CLA = 0x80.  Digital signature security operation is not supported if
-AES/DES key is selected. Data size (Lc) must match block size of DES /AES
-block.</p></div>
 <div class="paragraph"><p>OsEID does not support templates for now, but for completeness:</p></div>
 <div class="paragraph"><p>Templates:
 0xA0 - Input template to calculate the hash code (template hashed)
@@ -7160,21 +7161,21 @@ goal is to minimize the number of rotations.</p></div>
 highest non zero bit, then this bit is eliminated by subtraction.  <em>R</em> and
 <em>S</em> are kept updated similar to <em>U</em> and <em>V</em>.  This step is repeating, but
 align is done by right rotation, until bit size of <em>U</em> is bigger that bit
-size of <em>V</em>.  If this is not true, <em>U</em> and <em>V</em> (<em>R</em> and <em>S</em>) are swapped, and
-all rotations are returned back (right).  This procedure is repeating until
-bit size of <em>U</em> is zero or one (no inversion exists or inversion found).</p></div>
+size of <em>V</em>.  If this is not true, <em>U</em> and <em>V</em> (<em>R</em> and <em>S</em>) are swapped,
+and all rotations are returned back (right).  This procedure is repeating
+until bit size of <em>U</em> is zero or one (no inversion exists or inversion
+found).</p></div>
 <div class="paragraph"><p>The <em>U</em> and <em>V</em> are represented as unsigned number, but there are helper
 variables <em>sU</em> and <em>sV</em> for storing the signs of <em>U</em> and <em>V</em>.  <em>R</em> and <em>S</em>
-variables use 64 more bits (this is enough to use 1 more bit to represent
-two&#8217;s complement number, but arithmetics routines are unrolled and use 8 bytes
-step).</p></div>
-<div class="paragraph"><p>Only C code is available for now, ASM version is planned.  Implementation
-allows us to calculate inversion for even modulus too (this is needed for
-calculation of CRT components).  Code is designed to be small, the speed of
-the algorithm is not significant.  (In versions before 20171231, right shift
-binary Euclidean algorithm was used, but this doesn&#8217;t allows us to calculate
-CRT components because modulus is always even number.  This code is smaller
-as new code but is slower too.)</p></div>
+variables are signed (in range +- 1/2 of modulus). Final sign is determived
+from <em>R</em> sign and <em>U</em> sign.</p></div>
+<div class="paragraph"><p>C and AVR ASM version is available, but ASM version is not faster.
+Implementation allows us to calculate inversion for even modulus too (this
+is needed for calculation of CRT components).  Code is designed to be small,
+the speed of the algorithm is not significant.  (In versions before
+20171231, right shift binary Euclidean algorithm was used, but this doesn&#8217;t
+allows us to calculate CRT components because modulus is always even number.
+This code is smaller as new code but is slower too.)</p></div>
 </div>
 <div class="sect2">
 <h3 id="_modulo_operation_and_modular_reduction">Modulo operation and modular reduction</h3>
@@ -9029,7 +9030,7 @@ if ((EE == 1 or EE == N-1)) then (
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2020-11-30 13:53:25 CET
+ 2021-07-01 10:45:38 CEST
 </div>
 </div>
 </body>
